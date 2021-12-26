@@ -13,7 +13,7 @@ public class MyRemoteServiceTest {
 
     @Inject
     @RestClient
-    HueRemoteService myRemoteService;
+    HueLightsService myRemoteService;
 
     @Test
     public void testExtensionsRestClientEndpoint() {
