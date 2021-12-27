@@ -1,4 +1,4 @@
-package org.wanja.hue;
+package org.wanja.hue.remote;
 
 import java.util.ArrayList;
 import java.util.List;

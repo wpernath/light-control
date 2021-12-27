@@ -1,4 +1,4 @@
-package org.wanja.hue;
+package org.wanja.hue.remote;
 
 public class Action {
     public String alert;

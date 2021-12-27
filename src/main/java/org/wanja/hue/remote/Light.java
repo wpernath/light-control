@@ -1,4 +1,4 @@
-package org.wanja.hue;
+package org.wanja.hue.remote;
 
 public class Light {
     public String id;

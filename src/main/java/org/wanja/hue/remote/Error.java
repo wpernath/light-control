@@ -1,4 +1,4 @@
-package org.wanja.hue;
+package org.wanja.hue.remote;
 
 public class Error {
     public String address;

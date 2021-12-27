@@ -15,6 +15,11 @@ import javax.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
+import org.wanja.hue.remote.HueLightsService;
+import org.wanja.hue.remote.Light;
+import org.wanja.hue.remote.Room;
+import org.wanja.hue.remote.State;
+import org.wanja.hue.remote.StateResponse;
 
 
 @Consumes(MediaType.APPLICATION_JSON)
