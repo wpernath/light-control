@@ -7,7 +7,7 @@ public class Room {
     public String id;
     public String name;
     public String type;
-    public boolean recycle;
+    public Boolean recycle;
     public Action action;
     public String[] lights;
 

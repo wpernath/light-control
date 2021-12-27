@@ -6,7 +6,7 @@ public class Action {
     public String colormode;
     public Integer ct;
     public String effect;
-    public boolean on;
+    public Boolean on;
     public Integer hue;
     public Integer sat;
     

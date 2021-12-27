@@ -28,7 +28,7 @@ public class LightService {
 
     @GET
     @Path("/lights")
-    public List<Light> getAll() {
+    public List<Light> getAllLights() {
         List<Light> lights = new ArrayList<Light>();
         Map<String, Light> lightMap = hueService.getAllLights();
 
@@ -39,6 +39,12 @@ public class LightService {
             lights.add(light);
         }
         return lights;
+    }
+
+    @GET
+    @Path("/lights/{id}")
+    public Light getLight(@PathParam String id) {
+        return hueService.getLightById(id);
     }
 
     @PUT
@@ -73,5 +79,16 @@ public class LightService {
         return rooms;
     }
 
+    @GET
+    @Path("/rooms/q/{name}")
+    public Room getRoomByName(@PathParam String name ) {
+        List<Room> rooms = getAllRooms();
+        for(Room r : rooms) {
+            if( r.name.equalsIgnoreCase(name)) {
+                return r;
+            }
+        }
+        return null;
+    }
 
 }
