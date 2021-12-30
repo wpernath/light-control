@@ -9,5 +9,9 @@ public class Action {
     public Boolean on;
     public Integer hue;
     public Integer sat;
-    
+    public Integer transitiontime;
+    public Integer briInc;
+    public Integer satInc;
+    public Integer hueInc;
+    public String scene;
 }

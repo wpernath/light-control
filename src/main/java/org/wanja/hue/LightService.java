@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
+import org.wanja.hue.remote.Action;
 import org.wanja.hue.remote.HueLightsService;
 import org.wanja.hue.remote.Light;
 import org.wanja.hue.remote.Room;
@@ -96,4 +97,9 @@ public class LightService {
         return null;
     }
 
+    @PUT
+    @Path("/rooms/{id}/scene")
+    public void setRoomScene(@PathParam String id, Action action) {
+        hueService.setGroupAction(id, action);
+    }
 }

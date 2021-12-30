@@ -33,4 +33,8 @@ public interface HueLightsService {
     @PUT
     @Path("/lights/{id}/state")
     StateResponse[] setLightState(@PathParam String id, State state);
+
+    @PUT
+    @Path("/groups/{id}/action")
+    void setGroupAction(@PathParam String id, Action action);
 }
