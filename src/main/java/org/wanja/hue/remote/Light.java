@@ -14,9 +14,12 @@ public class Light extends PanacheEntity {
     public String productname;
     public String type;
     public String uniqueid;
+    public Long   roomId;
+    public String bridgeNumber;
 
     @Transient
     public State state;
 
+    // The room number for Hue
     public String roomNumber;
 }

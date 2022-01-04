@@ -9,32 +9,30 @@ import javax.ws.rs.Path;
 
 import java.util.Map;
 
-
-
 @RegisterRestClient(configKey = "hue-lights" )
 public interface HueLightsService {
 
     @GET
-    @Path("/lights/{id}")
+    @Path("lights/{id}")
     Light getLightById(@PathParam String id);
 
     @GET
-    @Path("/lights")
+    @Path("lights")
     Map<String, Light> getAllLights();
 
     @GET
-    @Path("/groups/{id}")
+    @Path("groups/{id}")
     Room getRoomById(@PathParam String id);
 
     @GET
-    @Path("/groups")
+    @Path("groups")
     Map<String, Room> getAllGroups();
 
     @PUT
-    @Path("/lights/{id}/state")
+    @Path("lights/{id}/state")
     StateResponse[] setLightState(@PathParam String id, State state);
 
     @PUT
-    @Path("/groups/{id}/action")
+    @Path("groups/{id}/action")
     void setGroupAction(@PathParam String id, Action action);
 }

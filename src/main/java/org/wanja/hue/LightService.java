@@ -31,11 +31,11 @@ import org.wanja.hue.remote.StateResponse;
 public class LightService {
     
 
-    @Inject
-    @RestClient
-    HueLightsService hueService;
+//    @Inject
+//    @RestClient
+//    HueLightsService hueService;
 
-    public List<Light> getAllLights() {
+    public List<Light> getAllLights(HueLightsService hueService) {
         List<Light> lights = new ArrayList<Light>();
         Map<String, Light> lightMap = hueService.getAllLights();
 
@@ -48,15 +48,15 @@ public class LightService {
         return lights;
     }
 
-    public Light getLight(String id) {
+    public Light getLight(HueLightsService hueService, String id) {
         return hueService.getLightById(id);
     }
 
-    public StateResponse[] setLightState(String id, State state) {
+    public StateResponse[] setLightState(HueLightsService hueService, String id, State state) {
         return hueService.setLightState(id, state);
     }
 
-    public List<Room> getAllRooms() {
+    public List<Room> getAllRooms(HueLightsService hueService, Bridge bridge) {
         
         List<Room> rooms = new ArrayList<Room>();
         Map<String, Room> roomMap = hueService.getAllGroups();
@@ -66,11 +66,14 @@ public class LightService {
             if(room.type.equals("Room")) {
                 rooms.add(room);
                 room.number = key;
+                room.bridge = bridge;
                 if( room.lights != null && room.lights.length > 0) {
+                    room.allLights = new ArrayList<Light>();
                     for( String l : room.lights ){
                         Light light = hueService.getLightById(l);
                         light.number = l;
                         light.roomNumber = key;
+                        light.bridgeNumber = room.bridge.bridgeNumber;
                         room.allLights.add(light);
                     }
                 }
@@ -79,8 +82,9 @@ public class LightService {
         return rooms;
     }
 
-    public Room getRoomByName(String name ) {
-        List<Room> rooms = getAllRooms();
+    /*
+    public Room getRoomByName(HueLightsService hueService, String name ) {
+        List<Room> rooms = getAllRooms(hueService);
         for(Room r : rooms) {
             if( r.name.equalsIgnoreCase(name)) {
                 return r;
@@ -88,8 +92,9 @@ public class LightService {
         }
         return null;
     }
+*/
 
-    public void setRoomScene(String id, Action action) {
+    public void setRoomScene(HueLightsService hueService, String id, Action action) {
         hueService.setGroupAction(id, action);
     }
 }

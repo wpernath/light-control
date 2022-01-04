@@ -1,9 +1,13 @@
 package org.wanja.hue.remote;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -26,7 +30,7 @@ public class Room extends PanacheEntity {
     @Transient
     public String[] lights;
 
-    @OneToMany(mappedBy = "roomNumber")
-    public List<Light> allLights = new ArrayList<Light>();
+    @OneToMany(mappedBy = "roomId" )
+    public List<Light> allLights = Collections.emptyList();
 
 }
