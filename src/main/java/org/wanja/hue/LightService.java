@@ -31,10 +31,12 @@ import org.wanja.hue.remote.StateResponse;
 public class LightService {
     
 
-//    @Inject
-//    @RestClient
-//    HueLightsService hueService;
-
+    /**
+     * Returns a list of all lights of a given bridge
+     * 
+     * @param hueService HueService to access
+     * @return List of lights
+     */
     public List<Light> getAllLights(HueLightsService hueService) {
         List<Light> lights = new ArrayList<Light>();
         Map<String, Light> lightMap = hueService.getAllLights();
@@ -48,14 +50,35 @@ public class LightService {
         return lights;
     }
 
+    /**
+     * Returns a light by ID
+     * @param hueService Bridge to use
+     * @param id hue id to return light
+     * @return Light
+     */
     public Light getLight(HueLightsService hueService, String id) {
         return hueService.getLightById(id);
     }
 
+    /**
+     * Sets the state of a light 
+     * 
+     * @param hueService Hue bridge to use
+     * @param id hue id of the light to use
+     * @param state State to provide
+     * @return new state
+     */
     public StateResponse[] setLightState(HueLightsService hueService, String id, State state) {
         return hueService.setLightState(id, state);
     }
 
+    /**
+     * Calls the corresponding HueService and returns a list of all rooms belonging to that brige
+     * 
+     * @param hueService HueService to call
+     * @param bridge Bridge whose rooms to get
+     * @return a list of all rooms
+     */
     public List<Room> getAllRooms(HueLightsService hueService, Bridge bridge) {
         
         List<Room> rooms = new ArrayList<Room>();
@@ -82,18 +105,22 @@ public class LightService {
         return rooms;
     }
 
-    /*
-    public Room getRoomByName(HueLightsService hueService, String name ) {
-        List<Room> rooms = getAllRooms(hueService);
-        for(Room r : rooms) {
-            if( r.name.equalsIgnoreCase(name)) {
-                return r;
-            }
+    public Room getRoomScene(HueLightsService hueService, Room room) {
+        Room bridgeRoom = hueService.getRoomById(room.number);
+        room.action = bridgeRoom.action;
+        for( Light light : room.allLights ) {
+            Light l = getLight(hueService, light.number);
+            light.state = l.state;
         }
-        return null;
+        return room;
     }
-*/
 
+    /**
+     * Sets the lights of a complete room
+     * @param hueService Bridge to use
+     * @param id Hue ID of the room
+     * @param action action to do
+     */
     public void setRoomScene(HueLightsService hueService, String id, Action action) {
         hueService.setGroupAction(id, action);
     }
