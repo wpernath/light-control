@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en" class=" scrollbar-type-1 sb-cyan">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Hue Light Control UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Metro 4 -->
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
+    <link rel="stylesheet" href="index.css">
+
+    <!-- Load AngularJS -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    
+    <script>
+        window.on_page_functions = [];
+    </script>
+
+    <style>
+    #title-tokenizer {
+        font-size: 28px;
+        font-weight: bold;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        background: #3e372d;
+        position: relative;
+    }
+    #title-tokenizer .char {
+        font-weight: bold;
+        display: inline-block;
+        width: 24px;
+        height: 28px;
+        line-height: 28px;
+        text-align: center;
+        text-transform: uppercase;
+        z-index: 2;
+        opacity: .8;
+    }
+    #title-tokenizer .char.te-odd {
+        background: orangered;
+        transform: skewY(-20deg);
+    }
+    #title-tokenizer .char:not(.space).te-even {
+        background: orange;
+        transform: skewY(20deg);
+    }
+    </style>
+
+    <script type="text/javascript">
+        var app = angular.module("HueManagement", []);
+
+        
+        //Controller Part
+        app.controller("HueManagementController", function ($scope, $http) {
+
+            //Initialize page with default data which is blank in this example
+            $scope.rooms = [];
+
+            $scope.selectedRoom = [];
+
+            //Now load the data from server
+            _refreshPageData();
+
+            function updateSelectedRoom(roomName) {
+                $http({
+                    method: 'GET',
+                    url: '/api/rooms/q?rn='+roomName
+                }).then(function successCallback(response) {
+                    $scope.selectedRoom = response.data;
+                }, function errorCallback(response) {
+                    console.log(response.statusText);
+                });
+            }
+
+            /* Private Methods */
+            //HTTP GET- get all rooms collection
+            function _refreshPageData() {
+                $http({
+                    method: 'GET',
+                    url: '/api/rooms'
+                }).then(function successCallback(response) {
+                    $scope.rooms = response.data;
+                }, function errorCallback(response) {
+                    console.log(response.statusText);
+                });
+            }
+
+            function _success(response) {
+                _refreshPageData();
+                _clearForm()
+            }
+
+            function _error(response) {
+                alert(response.data.message || response.statusText);
+            }
+
+            //Clear the form
+            function _clearForm() {
+            }
+        });
+    </script>
+</head>
+
+<body ng-app="HueManagement" ng-controller="HueManagementController" class="m4-cloak h-vh-100">
+
+    <div data-role="navview" data-toggle="#paneToggle" data-expand="xl" data-compact="lg" data-active-state="true">
+
+        <div class="navview-pane">
+            <div class="bg-cyan d-flex flex-align-center">
+                <button class="pull-button m-0 bg-darkCyan-hover">
+                    <span class="mif-menu fg-white"></span>
+                </button>
+                <h2 class="text-light m-0 fg-white pl-7" style="line-height: 52px">light-control</h2>
+            </div>
+        
+        
+            <div class="suggest-box">
+                <input type="text" data-role="input" data-clear-button="false" data-search-button="true">
+                <button class="holder">
+                    <span class="mif-search fg-white"></span>
+                </button>
+            </div>
+
+            <ul class="navview-menu mt-4" id="side-menu">
+                <li class="item-header">MAIN NAVIGATION</li>
+                <li>
+                    <a href="#favorites">
+                        <span class="icon"><span class="mif-favorite"></span></span>
+                        <span class="caption">Favorites</span>
+                    </a>
+                </li>
+
+                <li ng-repeat="room in rooms">
+                    <a href="/index.html?id={{ room.name }}"  > 
+                        <span class="icon"><span class="mif-room"></span></span>
+                        <span class="caption">{{ room.name }}</span> 
+                    </a>
+                </li>                
+            </ul>
+        </div>
+
+        <!-- content area -->
+        <div class="navview-content h-100" >
+            <div data-role="appbar" class="pos-absolute bg-darkCyan fg-white">
+                <a href="#" class="app-bar-item d-block d-none-lg" id="paneToggle"><span class="mif-menu"></span></a>
+            </div>
+
+            <!-- Content here will be replaced by click on navview item -->
+            <div id="content-wrapXXXper" class="content-inner h-100" style="overflow-y: auto">
+                <iframe id="frame" src="/room.html">
+
+                </iframe>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="container-fluid">        
+
+        <!--
+
+        <div class="container-fluid">
+            <ul data-role="treeview">
+                <span ng-repeat="room in rooms">
+                <li data-caption="{{ room.name }}" >
+                    <ul>
+                        <li ng-repeat="light in room.allLights" data-caption="{{ light.name }}" >
+                            <input type="checkbox" data-role="switch" data-caption="{{ light.name }}" >
+                        </li>
+                    </ul>
+                </li>
+                </span>
+            </ul>
+        </div -->
+    </div>
+
+    <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>

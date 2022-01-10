@@ -1,0 +1,24 @@
+<div class="m-3">
+    <div class="">
+        <div class="bg-white p-6 text-center">
+
+            <p class="text-leader2">
+                    INTRODUCTION
+            </p>
+        </div>
+    </div>
+    <div>
+                                        <ul data-role="treeview">
+                                            <span ng-repeat="room in rooms">
+                                                <li data-caption="{{ room.name }}">
+                                                    <ul>
+                                                        <li ng-repeat="light in room.allLights" data-caption="{{ light.name }}">
+                                                            <input type="checkbox" data-role="switch" data-caption="{{ light.name }}">
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            </span>
+                                        </ul>
+
+    </div>
+</div>

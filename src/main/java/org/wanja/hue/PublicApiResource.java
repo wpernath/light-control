@@ -146,7 +146,9 @@ public class PublicApiResource {
     @GET
     @Path("/rooms")
     public List<Room> allRooms() {
+        Log.infof("Getting a list of all Rooms");
         List<Room> rooms = Room.findAll(Sort.by("name").ascending()).list();
+        Log.infof("  Got %d rooms", rooms.size());
         return rooms;
     }
 
@@ -157,8 +159,10 @@ public class PublicApiResource {
         if (room == null)
             throw new WebApplicationException("No room named '" + roomName + "' found!");
 
+        Log.infof("Room '%s' found. Populating...", roomName);
         HueLightsService service = hueServiceByBridge(room.bridge);
         room = lightService.getRoomScene(service, room);
+
         return room;
     }
 

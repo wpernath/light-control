@@ -15,7 +15,6 @@ import org.wanja.hue.remote.Room;
 import org.wanja.hue.remote.State;
 import org.wanja.hue.remote.StateResponse;
 
-import io.quarkus.logging.Log;
 
 @Singleton
 public class LightService {
