@@ -5,20 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.ManagedBean;
-import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.wanja.hue.remote.Action;
 import org.wanja.hue.remote.Bridge;
 import org.wanja.hue.remote.HueLightsService;
@@ -26,6 +14,8 @@ import org.wanja.hue.remote.Light;
 import org.wanja.hue.remote.Room;
 import org.wanja.hue.remote.State;
 import org.wanja.hue.remote.StateResponse;
+
+import io.quarkus.logging.Log;
 
 @Singleton
 public class LightService {

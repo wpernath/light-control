@@ -16,6 +16,7 @@ public class Light extends PanacheEntity {
     public String uniqueid;
     public Long   roomId;
     public String bridgeNumber;
+    public Boolean isFavorite = false;
 
     @Transient
     public State state;

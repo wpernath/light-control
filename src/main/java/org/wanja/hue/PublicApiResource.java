@@ -27,14 +27,15 @@ import org.wanja.hue.remote.Bridge;
 import org.wanja.hue.remote.HueLightsService;
 import org.wanja.hue.remote.Light;
 import org.wanja.hue.remote.Room;
+import org.wanja.hue.remote.State;
 
 import io.quarkus.panache.common.Sort;
-
+import io.quarkus.logging.Log;
 
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/api")
-public class DatabaseService {
+public class PublicApiResource {
 
     @Inject
     LightService lightService;
@@ -42,11 +43,6 @@ public class DatabaseService {
     @Inject
     HueBridgeConfig bridgeConfig;
 
-    @GET
-    @Path("/test")
-    public String test() {
-        return bridgeConfig.paul();
-    }
 
     HueLightsService hueServiceByBridge(Bridge b) throws MalformedURLException {
         return RestClientBuilder.newBuilder()
@@ -63,17 +59,23 @@ public class DatabaseService {
     @Transactional
     @Path("/bridge/init")
     public void deleteDatabase() throws Exception {
+        Log.info("Deleting Database...");
         List<Bridge> bridges = allBridges();
         List<Room> rooms = allRooms();
 
+        Log.infof("Deleting %d rooms", rooms.size());
         for( Room r : rooms ) {
+            Log.infof("Deleting Room %s", r.name);
             r.delete();
             for( Light l : r.allLights ) {
+                Log.infof("Deleting Light %s", l.name);
                 l.delete();
             }
         }
 
+        Log.infof("Deleting %d bridges", bridges.size());
         for(Bridge b : bridges ) {
+            Log.infof("Deleting Bridge %s", b.name);
             b.delete();
         }
     }
@@ -89,8 +91,16 @@ public class DatabaseService {
     public void updateDatabase() throws Exception {
         List<Bridge> bridges = new ArrayList<Bridge>();
         Set<HueBridge> configBridges = bridgeConfig.bridges();
-
         int bridgeNum = 0;
+        long roomNum = 0;
+        long lightNum = 0;
+
+        if( !allBridges().isEmpty()) {
+            Log.infof("This Database is already initialized. Call DELETE first, if you want to reinitialize the DB!");
+            return;
+        }
+        Log.info("Initializing Database...");
+        
         for(HueBridge b : configBridges ) {
             Bridge bridge       = new Bridge();
             bridge.authToken    = b.authToken();
@@ -100,24 +110,31 @@ public class DatabaseService {
             bridges.add(bridge);
             bridge.persist();
             bridgeNum++;
+
+            Log.infof("Creating Bridge %s recieving input at %s", b.name(), bridge.baseURL);
         }
 
         for( Bridge b : bridges) {
-            System.out.println("Scanning " + b.name);
+            Log.infof("Scanning Bridge %s",  b.name);
             HueLightsService hueService;
             hueService = hueServiceByBridge(b);
 
             List<Room> rooms = lightService.getAllRooms(hueService, b);
 
             for (Room r : rooms) {
+                roomNum++;
+                Log.infof("Creating Room %s on Bridge %s", r.name, b.name);
                 r.bridge = b;
                 r.persist();
                 for (Light l : r.allLights) {
+                    lightNum++;
+                    Log.infof("Creating Light %s in Room %s", l.name, r.name);
                     l.roomId = r.id;
                     l.persist();
                 }
             }
         }
+        Log.infof("Initialized Database with %d Bridges, %d Rooms and %d Lights.", bridgeNum, roomNum, lightNum);
     }
 
     @GET
@@ -164,5 +181,16 @@ public class DatabaseService {
         return lights;
     }
 
+    @PUT
+    @Path("/lights/q")
+    public void setLightStateById(@QueryParam("id") String lightId, State state) throws Exception {
+        Light light = Light.findById(Long.parseLong(lightId));
+        if( light == null ) throw new WebApplicationException("No Light with id " + lightId + " found!");
+        Room room = Room.findById(light.roomId);
+        Bridge bridge = room.bridge;
+        HueLightsService service = hueServiceByBridge(bridge);
 
+        lightService.setLightState(service, light.number, state);
+        
+    }
 }

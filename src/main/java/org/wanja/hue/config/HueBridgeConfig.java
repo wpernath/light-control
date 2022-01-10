@@ -7,7 +7,7 @@ import io.smallrye.config.ConfigMapping;
 @ConfigMapping(prefix="hue")
 public interface HueBridgeConfig {
     Set<HueBridge> bridges();
-    String paul();
+    //String paul();
 
     public interface HueBridge {
         String name();
