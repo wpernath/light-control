@@ -195,6 +195,23 @@ public class PublicApiResource {
         HueLightsService service = hueServiceByBridge(bridge);
 
         lightService.setLightState(service, light.number, state);
-        
     }
+
+    @GET
+    @Path("/lights/toggle")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public void toggleLightById(@QueryParam Long id, @QueryParam Boolean on, @QueryParam Integer bri) throws MalformedURLException {
+        Light light = Light.findById(id);
+        if (light == null)
+            throw new WebApplicationException("No Light with id " + id + " found!");
+        Room room = Room.findById(light.roomId);
+        Bridge bridge = room.bridge;
+        HueLightsService service = hueServiceByBridge(bridge);
+
+        State state = new State();
+        state.on = on;
+        state.bri = bri;
+        lightService.setLightState(service, light.number, state);
+    }
+
 }

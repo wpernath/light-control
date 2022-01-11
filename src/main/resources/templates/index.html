@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en" class=" scrollbar-type-1 sb-cyan">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Hue Light Control UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Metro 4 -->
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
+    <link rel="stylesheet" href="/index.css">
+
+    <script>
+        function toggleLightState(lightId, state, bri) {
+            console.log("state = " +state); 
+
+            $.ajax({
+                url: "/api/lights/toggle",
+                method: "GET",
+                headers: {
+                    "Content-Type": "text/plain"                    
+                },
+                data: {
+                    "id": lightId,
+                    "on": state,
+                    "bri": bri
+                }
+            }).then(
+                function(response){
+                    console.log(response);
+                },
+                function(xhr){
+                    console.log(xhr.status, xhr.statusText);
+                }
+            )
+            
+        }
+    </script>
+</head>
+
+<body class="m4-cloak h-vh-100">
+
+    <div data-role="navview" data-toggle="#paneToggle" data-expand="xl" data-compact="lg" data-active-state="true">
+
+        <div class="navview-pane">
+            <div class="bg-cyan d-flex flex-align-center">
+                <button class="pull-button m-0 bg-darkCyan-hover">
+                    <span class="mif-menu fg-white"></span>
+                </button>
+                <a href="/ui/index"><h2 class="text-light m-0 fg-white pl-7" style="line-height: 52px">light-control</h2></a>
+            </div>
+        
+        
+            <div class="suggest-box">
+                <input type="text" data-role="input" data-clear-button="false" data-search-button="true">
+                <button class="holder">
+                    <span class="mif-search fg-white"></span>
+                </button>
+            </div>
+
+            <ul class="navview-menu mt-4" id="side-menu">
+                <li class="item-header">MAIN NAVIGATION</li>
+                <li>
+                    <a href="/ui/favorites">
+                        <span class="icon"><span class="mif-favorite"></span></span>
+                        <span class="caption">Favorites</span>
+                    </a>
+                </li>
+
+                {#for room in rooms}
+                <li>
+                    <a href="/ui/room?room={room.name}"  > 
+                        <span class="icon"><span class="mif-room"></span></span>
+                        <span class="caption">{room.name}</span> 
+                    </a>
+                </li>                
+                {/for}
+
+            </ul>
+        </div>
+
+        <!-- content area -->
+        <div class="navview-content h-100" >
+            <div data-role="appbar" class="pos-absolute bg-darkCyan fg-white">
+                <a href="#" class="app-bar-item d-block d-none-lg" id="paneToggle"><span class="mif-menu"></span></a>
+            </div>
+
+            <!-- Content here will be replaced by click on navview item -->
+            <div class="content-inner h-100" style="overflow-y: auto">
+
+             {#switch state} 
+                {#case 'index'}
+                    {#include intro /}
+                    
+                {#case 'room'}
+                    {#include room /}
+                    
+             {/switch}  
+
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+</body>
+
+</html>
