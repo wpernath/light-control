@@ -1,0 +1,39 @@
+<div class="m-3">
+    <div class="">
+        <div class="bg-white p-6 text-center">
+
+            <p class="text-leader2">
+                <b>{selectedRoom.name}</b>
+            </p>
+        </div>
+        <div class="m-2"></div>
+
+        <div class="bg-white p-2">
+            <ul>
+
+                {#for light in selectedRoom.allLights}
+                 <li>   
+                     <input type="checkbox" 
+                            data-caption="{light.name}" 
+                            data-role="switch" 
+                            data-on="on" 
+                            data-off="off" 
+                            {#if light.state.on } checked {/if} 
+                            onclick="toggleLightState({light.id}, this.checked, {light.state.bri});"
+                    />
+                    
+                    <input  data-role="slider" 
+                            data-min="5" 
+                            data-max="254" 
+                            data-show-min-max="true"
+                            data-value="{light.state.bri}"
+                            data-hint="true"
+                            data-on-change="toggleLightState({light.id}, {light.state.on}, this.value);"
+                            >
+                 </li>
+                {/for}
+            </ul>
+        </div>
+    </div>
+</div>
+
