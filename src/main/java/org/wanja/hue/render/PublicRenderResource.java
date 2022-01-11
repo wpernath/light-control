@@ -1,5 +1,8 @@
 package org.wanja.hue.render;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -8,6 +11,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.wanja.hue.PublicApiResource;
+import org.wanja.hue.remote.Room;
 
 import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
@@ -41,4 +45,19 @@ public class PublicRenderResource {
         ti.data("selectedRoom", api.roomByName(name));
         return ti;
     }
+
+    @GET
+    @Path("/favorites")
+    public TemplateInstance renderFavorites() throws Exception {
+        Log.infof("Rendering Favorites");
+        List<Room> emptyRooms = api.allRooms();
+        List<Room> rooms = new ArrayList<Room>(emptyRooms.size());
+        for(Room r : emptyRooms ){
+            rooms.add(api.roomByName(r.name));
+        }
+        TemplateInstance ti = index.data("state", "favorites");
+        ti.data("rooms", rooms);
+        return ti;
+    }
+
 }
