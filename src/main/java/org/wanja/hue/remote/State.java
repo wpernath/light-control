@@ -15,4 +15,11 @@ public class State {
         return newState;
     }
 
+    @Override
+    public String toString() {
+        return "State [alert=" + alert + ", bri=" + bri + ", mode=" + mode + ", on=" + on + ", reachable=" + reachable
+                + "]";
+    }
+
+    
 }

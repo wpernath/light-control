@@ -5,6 +5,8 @@
         {
             id: {room.id},
             name: '{room.name}',
+            on: {room.action ? room.action.on : 'false'},
+            bri: {room.action ? room.action.bri : 0},
             lights: [
             {#for light in room.allLights.orEmpty}
                 {
@@ -21,8 +23,11 @@
     ];
 
     {#if state is 'room' }
-    var roomName = '{selectedRoom.name}';
-    var roomId   = {selectedRoom.id};
+    var selectedRoomName = '{selectedRoom.name}';
+    var selectedRoomId   = {selectedRoom.id};
+    {#else}
+    var selectedRoomName = '';
+    var selectedRoomId   = -1;        
     {/if}
 
     var allLights = [
@@ -47,9 +52,84 @@
     {/if}
     ];
     
+    function findRoomById(roomId) {
+        for(var i=0; i < rooms.length; i++) {
+            if( rooms[i].id == roomId) {
+                return rooms[i];
+            }
+        }
+        return null;
+    }
+
+
+    function roomHasLittenBulbs(roomId) {
+        var room = findRoomById(roomId);
+        if( room ) {
+            for(var i=0; i < room.lights.length; i++) {
+                var light = room.lights[i];
+                if( light.on ) return true;
+            }
+        }
+        return false;
+    }
+
+    function toggleRoom(roomId, bri, onlyLight) {
+        var room = findRoomById(roomId);
+        var state;
+        if( room ) {
+            if( onlyLight ){
+                room.on = !room.on;
+                bri = room.bri;
+            }
+
+            state = room.on;
+            $.ajax({
+                url: "/api/rooms/toggle",
+                method: "GET",
+                headers: {
+                    "Content-Type": "text/plain"                    
+                },
+                data: {
+                    "id": roomId,
+                    "on": room.on,
+                    "bri": bri
+                }
+            }).then(
+                function(response){
+                    console.log("Room = {" + roomId + ", " + state + ", " + bri + "};" );
+                    var images = new Array(1+room.lights.length);
+                    images[0] = "img_room_" + roomId;
+
+                    for( var i = 0; i < room.lights.length; i++ ) {
+                        images[i+1] = "img_light_" + room.lights[i].id;
+                    }
+
+                    for( var i=0; i < images.length; i++ ){
+
+                        var img = document.getElementById(images[i]);
+                        if( img ) {
+                            var imgName;
+                            if( state ) {
+                                imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png"
+                            }
+                            else {
+                                imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png"
+                            }
+                            img.src = imgName;
+                            console.log("Image for " + img.id + " set to " + imgName);
+                        }
+                    }
+
+                },
+                function(xhr){
+                    console.log(xhr.status, xhr.statusText);
+                }
+            )
+        }        
+    }
 
     function toggleLightState(lightId, state, bri, onlyLight) {
-        var light = [];
+        var light;
         for( var i = 0; i < allLights.length; i++ ) {
             if( allLights[i].id == lightId ){
                 light = allLights[i];
@@ -62,40 +142,41 @@
             }
         }
         
-        $.ajax({
-            url: "/api/lights/toggle",
-            method: "GET",
-            headers: {
-                "Content-Type": "text/plain"                    
-            },
-            data: {
-                "id": lightId,
-                "on": light.on,
-                "bri": bri
-            }
-        }).then(
-            function(response){
-                console.log("Light = {" + lightId + ", " + state + ", " + bri + "};" );
-
-                var img = document.getElementById("img_light_"+lightId);
-                if( img ) {
-                    var imgName;
-                    if( state ) {
-                        imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png"
-                    }
-                    else {
-                        imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png"
-                    }
-                    img.src = imgName;
-                    console.log("Image for " + img.id + " set to " + imgName);
+        if( light ){
+            $.ajax({
+                url: "/api/lights/toggle",
+                method: "GET",
+                headers: {
+                    "Content-Type": "text/plain"                    
+                },
+                data: {
+                    "id": lightId,
+                    "on": light.on,
+                    "bri": bri
                 }
+            }).then(
+                function(response){
+                    console.log("Light = {" + lightId + ", " + state + ", " + bri + "};" );
 
-            },
-            function(xhr){
-                console.log(xhr.status, xhr.statusText);
-            }
-        )
-        
+                    var img = document.getElementById("img_light_"+lightId);
+                    if( img ) {
+                        var imgName;
+                        if( state ) {
+                            imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png"
+                        }
+                        else {
+                            imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png"
+                        }
+                        img.src = imgName;
+                        console.log("Image for " + img.id + " set to " + imgName);
+                    }
+
+                },
+                function(xhr){
+                    console.log(xhr.status, xhr.statusText);
+                }
+            )
+        }        
     }
 
 </script>

@@ -4,6 +4,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -43,11 +45,18 @@ public class PublicApiResource {
     @Inject
     HueBridgeConfig bridgeConfig;
 
+    Map<Long, HueLightsService> cachedBridges = new HashMap();
 
     HueLightsService hueServiceByBridge(Bridge b) throws MalformedURLException {
-        return RestClientBuilder.newBuilder()
+        HueLightsService service = cachedBridges.get(b.id);
+
+        if( service == null ) {
+            service = RestClientBuilder.newBuilder()
                     .baseUrl(new URL(b.baseURL + b.authToken))
                     .build(HueLightsService.class);
+            cachedBridges.put(b.id, service);
+        }
+        return service;
     }
 
     /**
@@ -60,6 +69,7 @@ public class PublicApiResource {
     @Path("/bridge/init")
     public void deleteDatabase() throws Exception {
         Log.info("Deleting Database...");
+        cachedBridges.clear();
         List<Bridge> bridges = allBridges();
         List<Room> rooms = allRooms();
 
@@ -212,6 +222,23 @@ public class PublicApiResource {
         state.on = on;
         state.bri = bri;
         lightService.setLightState(service, light.number, state);
+    }
+
+    @GET
+    @Path("/rooms/toggle")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public void toggleRoomById(@QueryParam Long id, @QueryParam Boolean on, @QueryParam Integer bri)
+            throws MalformedURLException {
+        Room room = Room.findById(id);
+        if (room == null)
+            throw new WebApplicationException("No Room with id " + id + " found!");
+        Bridge bridge = room.bridge;
+        HueLightsService service = hueServiceByBridge(bridge);
+
+        Action state = new Action();
+        state.on = on;
+        state.bri = bri;
+        lightService.setRoomScene(service, room.number, state);
     }
 
 }

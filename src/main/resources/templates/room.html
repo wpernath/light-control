@@ -2,9 +2,21 @@
     <div class="">
         <div class="bg-white p-6 text-center">
 
-            <p class="text-leader2">
-                <b>{selectedRoom.name}</b>
-            </p>
+            <div class="grid">
+                <div class="row flex-justify-start flex-align-start">
+                    <div class="cell-1 flex-align-self-start">
+                        <a href="#" onclick="toggleRoom({selectedRoom.id}, {selectedRoom.action.bri}, true);" >
+                            <img id="img_room_{selectedRoom.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png"
+                                class="icon h-48 w-48" />
+                        </a>
+                    </div>
+                    <div class="cell-11 flex-align-self-center">
+                        <p class="text-leader2">
+                            <b>{selectedRoom.name}</b>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="m-2"></div>
 
@@ -14,11 +26,7 @@
                 {#for light in selectedRoom.allLights}
                  <div class="row flex-align-start">  
                      <div class="cell">
-                        {#if light.state.on }
-                            <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png" class="icon h-48 w-48"/>
-                        {#else}
-                            <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-off.png" class="icon h-48 w-48"/>
-                        {/if}
+                        <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png" class="icon h-48 w-48"/>
                     </div>
                     <div class="cell">
                         <input type="checkbox" 

@@ -14,4 +14,10 @@ public class Action {
     public Integer satInc;
     public Integer hueInc;
     public String scene;
+    @Override
+    public String toString() {
+        return "Action [alert=" + alert + ", bri=" + bri + ", briInc=" + briInc + ", colormode=" + colormode + ", ct="
+                + ct + ", effect=" + effect + ", hue=" + hue + ", hueInc=" + hueInc + ", on=" + on + ", sat=" + sat
+                + ", satInc=" + satInc + ", scene=" + scene + ", transitiontime=" + transitiontime + "]";
+    }
 }

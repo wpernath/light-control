@@ -41,9 +41,19 @@ public class PublicRenderResource {
     @Path("/room")
     public TemplateInstance renderRoom(@QueryParam("room") String name) throws Exception {
         Log.infof("Rendering room %s", name);
+        List<Room> rooms = api.allRooms();
+        Room selected = api.roomByName(name);
+        int idx = rooms.indexOf(selected);
+
+        if( rooms.contains(selected)) {
+            rooms.remove(selected);
+            rooms.add(idx, selected);
+        }
+
+        Log.infof("Selected Room %s contains Action info: %s", name, selected.action);
         TemplateInstance ti = index.data("state", "room");
-        ti.data("rooms", api.allRooms());
-        ti.data("selectedRoom", api.roomByName(name));
+        ti.data("rooms", rooms);
+        ti.data("selectedRoom", selected);
         return ti;
     }
 
