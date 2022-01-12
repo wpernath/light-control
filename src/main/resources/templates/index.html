@@ -10,32 +10,7 @@
     <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
     <link rel="stylesheet" href="/index.css">
 
-    <script>
-        function toggleLightState(lightId, state, bri) {
-            console.log("state = " +state); 
-
-            $.ajax({
-                url: "/api/lights/toggle",
-                method: "GET",
-                headers: {
-                    "Content-Type": "text/plain"                    
-                },
-                data: {
-                    "id": lightId,
-                    "on": state,
-                    "bri": bri
-                }
-            }).then(
-                function(response){
-                    console.log(response);
-                },
-                function(xhr){
-                    console.log(xhr.status, xhr.statusText);
-                }
-            )
-            
-        }
-    </script>
+    {#include javascript /}
 </head>
 
 <body class="m4-cloak h-vh-100">
@@ -105,10 +80,9 @@
     </div>
 
 
-    <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
+    <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
 </body>
 
 </html>

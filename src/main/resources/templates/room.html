@@ -8,38 +8,41 @@
         </div>
         <div class="m-2"></div>
 
-        <div class="bg-white p-2">
-            <ul>
+        <div class="container bg-white p-2">
+            <div class="grid">
 
                 {#for light in selectedRoom.allLights}
-                 <li>  
-                     <span>
+                 <div class="row flex-align-start">  
+                     <div class="cell">
                         {#if light.state.on }
-                            <img src="https://img.icons8.com/color-glass/48/000000/light-on.png" />
+                            <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png" class="icon h-48 w-48"/>
                         {#else}
-                            <img src="https://img.icons8.com/color-glass/48/000000/light-off.png" />
+                            <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-off.png" class="icon h-48 w-48"/>
                         {/if}
-
+                    </div>
+                    <div class="cell">
                         <input type="checkbox" 
                                 data-caption="{light.name}" 
                                 data-role="switch" 
                                 data-on="on" 
                                 {#if light.state.on } checked {/if} 
-                                onclick="toggleLightState({light.id}, this.checked, {light.state.bri});"
+                                onclick="toggleLightState({light.id}, this.checked, {light.state.bri}, true);"
                         />
-                        
+                    </div>
+                    <div class="cell">
                         <input  data-role="slider" 
-                                data-min="5" 
+                                data-min="1" 
                                 data-max="254" 
                                 data-show-min-max="true"
                                 data-value="{light.state.bri}"
                                 data-hint="true"
-                                data-on-change="toggleLightState({light.id}, {light.state.on}, this.value);"
+                                data-on="true"
+                                data-on-change="toggleLightState({light.id}, {light.state.on}, this.value, false);"
                                 >
-                    </span>
-                 </li>
+                    </div>
+                </div>
                 {/for}
-            </ul>
+            </div>
         </div>
     </div>
 </div>

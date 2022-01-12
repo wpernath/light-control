@@ -1,0 +1,101 @@
+
+<script>            
+    var rooms = [
+        {#for room in rooms.orEmpty}
+        {
+            id: {room.id},
+            name: '{room.name}',
+            lights: [
+            {#for light in room.allLights.orEmpty}
+                {
+                    name: '{light.name}',
+                    id: {light.id}{#if light.state != null},
+                    on: {light.state.on},
+                    bri: {light.state.bri}
+                    {/if}
+                },
+            {/for}
+            ]
+        },
+        {/for}
+    ];
+
+    {#if state is 'room' }
+    var roomName = '{selectedRoom.name}';
+    var roomId   = {selectedRoom.id};
+    {/if}
+
+    var allLights = [
+    {#if state is 'room'}
+        {#for light in selectedRoom.allLights.orEmpty}
+        {
+            id: {light.id},
+            name: '{light.name}',
+            on: {light.state.on},
+            bri: {light.state.bri}
+        },
+        {/for}
+    {#else if state is 'favorites'}
+        {#for light in allLights.orEmpty}
+        {
+            id: {light.id},
+            name: '{light.name}',
+            on: {light.state.on},
+            bri: {light.state.bri}
+        },
+        {/for}
+    {/if}
+    ];
+    
+
+    function toggleLightState(lightId, state, bri, onlyLight) {
+        var light = [];
+        for( var i = 0; i < allLights.length; i++ ) {
+            if( allLights[i].id == lightId ){
+                light = allLights[i];
+                if( onlyLight ) {                    
+                    light.on = !allLights[i].on;
+                }
+                light.bri = bri;                    
+                state = light.on;
+                break;
+            }
+        }
+        
+        $.ajax({
+            url: "/api/lights/toggle",
+            method: "GET",
+            headers: {
+                "Content-Type": "text/plain"                    
+            },
+            data: {
+                "id": lightId,
+                "on": light.on,
+                "bri": bri
+            }
+        }).then(
+            function(response){
+                console.log("Light = {" + lightId + ", " + state + ", " + bri + "};" );
+
+                var img = document.getElementById("img_light_"+lightId);
+                if( img ) {
+                    var imgName;
+                    if( state ) {
+                        imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png"
+                    }
+                    else {
+                        imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png"
+                    }
+                    img.src = imgName;
+                    console.log("Image for " + img.id + " set to " + imgName);
+                }
+
+            },
+            function(xhr){
+                console.log(xhr.status, xhr.statusText);
+            }
+        )
+        
+    }
+
+</script>

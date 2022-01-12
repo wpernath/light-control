@@ -3,32 +3,23 @@
         <div class="bg-white p-6 text-center">
 
             <p class="text-leader2">
-                FAVORITE LIGHTS
+                <b>FAVORITE LIGHTS</b>
             </p>
         </div>
         <div class="m-2"></div>
-        
+
         <div class="bg-white p-2">
             <div class="tiles-grid">
                     {#for room in rooms}
-                    <script>
-                        var rooms = {
-                            name: '{room.name}',
-                            lights: {
-                            
-                            }
-
-                        };
-                    </script>
                         {#for light in room.allLights } 
                             <a id="light_{light.id}" data-role="tile" data-size="medium" data-effect="hover-zoom-right" class="bg-white"  
-                            onclick="toggleLightState({light.id}, {light.state.on ? false : true}, {light.state.bri}); " 
+                            onclick="toggleLightState({light.id}, {light.state.on ? false : true}, {light.state.bri}, true); " 
                             >
                                 <div class="slide-front">
                                     {#if light.state.on }
-                                    <img src="https://img.icons8.com/color-glass/48/000000/light-on.png" class="icon h-48 w-48"/>
+                                    <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png" class="icon h-48 w-48"/>
                                     {#else}
-                                    <img src="https://img.icons8.com/color-glass/48/000000/light-off.png" class="icon h-48 w-48"/>
+                                    <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-off.png" class="icon h-48 w-48"/>
                                     {/if}
                                 </div>
                                 <div class="slide-back d-flex flex-justify-center flex-align-center p-4 op-mauve">

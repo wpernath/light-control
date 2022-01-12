@@ -9,24 +9,6 @@
         <div class="m-2"></div>
 
         <div class="bg-white p-2">
-
-            <ul data-role="treeview">
-                {#for room in rooms}
-                <li data-caption="{room.name}" data-icon="<span class='mif-room'></span>">
-                    <ul>
-                        {#for light in room.allLights }
-                        <li>
-                            <input type="checkbox" data-role="switch" data-caption="{light.name}" data-on="on" 
-                            {#if light.state.on } checked {/if}
-                                onclick="toggleLightState({light.id}, this.checked, {light.state.bri});">
-                        </li>
-                        {/for}
-                    </ul>
-                </li>
-
-                {/for}
-
-            </ul>
         </div>
     </div>
 </div>

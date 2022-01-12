@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.wanja.hue.PublicApiResource;
 import org.wanja.hue.remote.Room;
+import org.wanja.hue.remote.Light;
 
 import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
@@ -51,12 +52,15 @@ public class PublicRenderResource {
     public TemplateInstance renderFavorites() throws Exception {
         Log.infof("Rendering Favorites");
         List<Room> emptyRooms = api.allRooms();
+        List<Light> allLights = new ArrayList();
         List<Room> rooms = new ArrayList<Room>(emptyRooms.size());
         for(Room r : emptyRooms ){
             rooms.add(api.roomByName(r.name));
+            allLights.addAll(r.allLights);
         }
         TemplateInstance ti = index.data("state", "favorites");
         ti.data("rooms", rooms);
+        ti.data("allLights", allLights);
         return ti;
     }
 
