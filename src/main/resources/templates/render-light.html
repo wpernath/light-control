@@ -1,0 +1,20 @@
+<div class="row flex-align-start">
+    <div class="cell">
+        {#if light.state.on}
+        <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png"
+            class="icon h-48 w-48" />
+        {#else}
+        <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-off.png"
+            class="icon h-48 w-48" />
+        {/if}
+    </div>
+    <div class="cell">
+        <input type="checkbox" data-caption="{light.name}" data-role="switch" data-on="on" {#if light.state.on } checked
+            {/if} onclick="toggleLightState({light.id}, this.checked, {light.state.bri}, true);" />
+    </div>
+    <div class="cell">
+        <input data-role="slider" data-min="1" data-max="254" data-show-min-max="true" data-value="{light.state.bri}"
+            data-hint="true" data-on="true"
+            data-on-change="toggleLightState({light.id}, {light.state.on}, this.value, false);">
+    </div>
+</div>

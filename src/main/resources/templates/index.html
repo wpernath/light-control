@@ -52,8 +52,14 @@
                 {#for room in rooms}
                 <li>
                     <a href="/ui/room?room={room.name}"  > 
-                        <span class="icon"><span class="mif-room"></span></span>
-                        <span class="caption">{room.name}</span> 
+                        <span class="icon"><span class="mif-room"></span></span>                        
+                        <span class="caption">
+                            {#if state is 'room' && selectedRoom.name is room.name}
+                            <b> > {room.name}</b>
+                            {#else}
+                              {room.name}
+                            {/if}
+                        </span> 
                     </a>
                 </li>                
                 {/for}
