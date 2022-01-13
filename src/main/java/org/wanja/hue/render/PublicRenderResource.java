@@ -74,4 +74,21 @@ public class PublicRenderResource {
         return ti;
     }
 
+    @GET
+    @Path("/all-rooms")
+    public TemplateInstance renderAllRooms() throws Exception {
+        Log.infof("Rendering all Rooms");
+        List<Room> emptyRooms = api.allRooms();
+        List<Light> allLights = new ArrayList();
+        List<Room> rooms = new ArrayList<Room>(emptyRooms.size());
+        for (Room r : emptyRooms) {
+            rooms.add(api.roomByName(r.name));
+            allLights.addAll(r.allLights);
+        }
+        TemplateInstance ti = index.data("state", "all-rooms");
+        ti.data("rooms", rooms);
+        ti.data("allLights", allLights);
+        return ti;
+    }
+
 }

@@ -6,8 +6,14 @@
                 <div class="row flex-justify-start flex-align-start">
                     <div class="cell-1 flex-align-self-start">
                         <a href="#" onclick="toggleRoom({selectedRoom.id}, {selectedRoom.action.bri}, true);" >
-                            <img id="img_room_{selectedRoom.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png"
-                                class="icon h-48 w-48" />
+
+                            {#if selectedRoom.action.on}
+                                <img id="img_room_{selectedRoom.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png"
+                                    class="icon h-48 w-48" />
+                            {#else}
+                                <img id="img_room_{selectedRoom.id}" src="https://img.icons8.com/color-glass/48/000000/light-off.png"
+                                    class="icon h-48 w-48" />
+                            {/if}
                         </a>
                     </div>
                     <div class="cell-11 flex-align-self-center">

@@ -173,6 +173,15 @@ public class PublicApiResource {
         HueLightsService service = hueServiceByBridge(room.bridge);
         room = lightService.getRoomScene(service, room);
 
+        // iterate through list of lights to see if ONE is on to turn on the complete room
+        // should be coming from Room.action from Hue... but it doesn't
+        room.action.on=false;
+        for( Light l : room.allLights){
+            if( l.state.on ){
+                room.action.on=true;
+                break;
+            }
+        }
         return room;
     }
 
