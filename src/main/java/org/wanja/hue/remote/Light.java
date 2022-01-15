@@ -11,9 +11,14 @@ public class Light extends PanacheEntity {
     public String manufacturername;
     public String modelid;
     public String name;
+    public String productid;
     public String productname;
+    public String swconfigid;
+    public String swversion;
     public String type;
     public String uniqueid;
+
+    // next 3 properties are only used by the app and are not coming from HUE
     public Long   roomId;
     public String bridgeNumber;
     public Boolean isFavorite = false;
@@ -23,4 +28,14 @@ public class Light extends PanacheEntity {
 
     // The room number for Hue
     public String roomNumber;
+
+    @Override
+    public String toString() {
+        return "Light [manufacturername=" + manufacturername + ", modelid=" + modelid + ", name=" + name + ", number="
+                + number + ", state=" + state + ", swconfigid=" + swconfigid + ", swversion=" + swversion + ", type="
+                + type + ", uniqueid=" + uniqueid + "]";
+    }
+
+
+    
 }

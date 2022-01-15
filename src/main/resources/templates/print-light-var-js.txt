@@ -1,0 +1,20 @@
+            {
+                name: '{light.name}',
+                modelid: '{light.modelid}',
+                productid: '{light.productid}',
+                productname: '{light.productname}',
+                manufacturername: '{light.manufacturername}',
+                id: {light.id}{#if light.state != null},
+                on: {light.state.on},
+                bri: {light.state.bri},
+                {#if light.state.hue != null}hue: {light.state.hue},{/if}
+                {#if light.state.sat != null}sat: {light.state.sat},{/if}
+                colormode: '{light.state.colormode}',
+                {#if light.state.ct != null}ct: {light.state.ct}{/if}{#if light.state.xy != null},
+                xy: [
+                    {light.state.xy[0]},
+                    {light.state.xy[1]}
+                ]    
+                {/if}
+                {/if}
+            },

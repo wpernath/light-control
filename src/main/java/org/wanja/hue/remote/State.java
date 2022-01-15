@@ -7,6 +7,13 @@ public class State {
     public Boolean on;
     public Integer bri;
 
+    // next two props are only set if the bulb supports colors
+    public String colormode;
+    public Long ct;
+    public Integer hue;
+    public Integer sat;
+    public Float[] xy;
+
     public Boolean toggledState() {
         Boolean newState = false;
         if( on != null && on.booleanValue() )  newState = false;
@@ -15,11 +22,22 @@ public class State {
         return newState;
     }
 
+    public boolean supportsColorChange() {
+        if( colormode != null && !colormode.isEmpty()) {
+            if( colormode.equalsIgnoreCase("ct") || 
+                colormode.equalsIgnoreCase("xy") ||
+                colormode.equalsIgnoreCase("hs"))
+                return true;
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
-        return "State [alert=" + alert + ", bri=" + bri + ", mode=" + mode + ", on=" + on + ", reachable=" + reachable
-                + "]";
+        return "State [alert=" + alert + ", bri=" + bri + ", colormode=" + colormode + ", ct=" + ct + ", mode=" + mode
+                + ", on=" + on + ", reachable=" + reachable + "]";
     }
+
 
     
 }

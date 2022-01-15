@@ -5,21 +5,24 @@
             <div class="grid">
                 <div class="row flex-justify-start flex-align-start">
                     <div class="cell-1 flex-align-self-start">
-                        <a href="#" onclick="toggleRoom({selectedRoom.id}, {selectedRoom.action.bri}, true);" >
-
-                            {#if selectedRoom.action.on}
-                                <img id="img_room_{selectedRoom.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png"
-                                    class="icon h-48 w-48" />
-                            {#else}
-                                <img id="img_room_{selectedRoom.id}" src="https://img.icons8.com/color-glass/48/000000/light-off.png"
-                                    class="icon h-48 w-48" />
-                            {/if}
-                        </a>
+                        <img src="https://img.icons8.com/color/48/000000/lounge.png" />
                     </div>
-                    <div class="cell-11 flex-align-self-center">
+                    <div class="cell-10 flex-align-self-center">
                         <p class="text-leader2">
                             <b>{selectedRoom.name}</b>
                         </p>
+                    </div>
+                    <div class="cell-1 flex-align-self-center">
+                        <a href="#" onclick="toggleRoom({selectedRoom.id}, {selectedRoom.action.bri}, true);">
+                        
+                            {#if selectedRoom.action.on}
+                            <img id="img_room_{selectedRoom.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png"
+                                class="icon h-48 w-48" />
+                            {#else}
+                            <img id="img_room_{selectedRoom.id}" src="https://img.icons8.com/color-glass/48/000000/light-off.png"
+                                class="icon h-48 w-48" />
+                            {/if}
+                        </a>
                     </div>
                 </div>
             </div>

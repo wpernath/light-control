@@ -9,13 +9,7 @@
             bri: {room.action ? room.action.bri : 0},
             lights: [
             {#for light in room.allLights.orEmpty}
-                {
-                    name: '{light.name}',
-                    id: {light.id}{#if light.state != null},
-                    on: {light.state.on},
-                    bri: {light.state.bri}
-                    {/if}
-                },
+                {#include print-light-var-js /}
             {/for}
             ]
         },
@@ -33,21 +27,11 @@
     var allLights = [
     {#if state is 'room'}
         {#for light in selectedRoom.allLights.orEmpty}
-        {
-            id: {light.id},
-            name: '{light.name}',
-            on: {light.state.on},
-            bri: {light.state.bri}
-        },
+            {#include print-light-var-js /}
         {/for}
     {#else if state is 'favorites'}
         {#for light in allLights.orEmpty}
-        {
-            id: {light.id},
-            name: '{light.name}',
-            on: {light.state.on},
-            bri: {light.state.bri}
-        },
+            {#include print-light-var-js /}
         {/for}
     {/if}
     ];
