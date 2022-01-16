@@ -24,7 +24,7 @@ public class Light extends PanacheEntity {
     public Boolean isFavorite = false;
 
     @Transient
-    public State state;
+    public State state = new State();
 
     // The room number for Hue
     public String roomNumber;
