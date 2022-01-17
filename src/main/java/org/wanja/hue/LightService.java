@@ -12,6 +12,7 @@ import org.wanja.hue.remote.Bridge;
 import org.wanja.hue.remote.HueLightsService;
 import org.wanja.hue.remote.Light;
 import org.wanja.hue.remote.Room;
+import org.wanja.hue.remote.Sensor;
 import org.wanja.hue.remote.State;
 import org.wanja.hue.remote.StateResponse;
 
@@ -112,5 +113,33 @@ public class LightService {
      */
     public void setRoomScene(HueLightsService hueService, String id, Action action) {
         hueService.setGroupAction(id, action);
+    }
+
+    /**
+     * 
+     * @param hueService
+     * @return
+     */
+    public List<Sensor> allSensors(HueLightsService hueService) {
+        Map<Long, Sensor> bridgeSensors = hueService.allSensors();
+        List<Sensor> sensors = new ArrayList<Sensor>();
+        Set<Long> keys = bridgeSensors.keySet();
+
+        for( Long key : keys) {
+            Sensor s = bridgeSensors.get(key);
+            s.sensorNumber = key;
+            sensors.add(s);
+        }
+        return sensors;
+    }
+
+    /**
+     * 
+     * @param hueService
+     * @param id
+     * @return
+     */
+    public Sensor findSensorById( HueLightsService hueService, Long id) {
+        return hueService.sensorById(id);
     }
 }

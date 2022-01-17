@@ -78,7 +78,7 @@
 
     console.log(rooms[1]);
     
-
+    const selectedState    = '{state}';
     {#if state is 'room' }
     const selectedRoomName = '{selectedRoom.name}';
     const selectedRoomId   = {selectedRoom.id};
@@ -88,17 +88,17 @@
     const selectedRoomId   = -1;        
     {/if}
 
-    const allLights = [
-    {#if state is 'room'}
-        {#for light in selectedRoom.allLights.orEmpty}
-            {#include print-light-var-js /}
-        {/for}
-    {#else if state is 'favorites'}
-        {#for light in allLights.orEmpty}
-            {#include print-light-var-js /}
-        {/for}
-    {/if}
-    ];
+    var allLights = [];
+    if( selectedState === 'room' ) {
+        allLights = selectedRoom.lights;
+    }
+    else {
+        for( var i = 0; i < rooms.length; i++ ) {
+            for( var n=0; n < rooms[i].lights.length; n++) {
+                allLights.push(rooms[i].lights[n]);
+            }
+        }
+    }
     
     function findRoomById(roomId) {
         for(var i=0; i < rooms.length; i++) {

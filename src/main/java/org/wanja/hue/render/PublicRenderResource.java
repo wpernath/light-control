@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.wanja.hue.PublicApiResource;
 import org.wanja.hue.remote.Room;
+import org.wanja.hue.remote.Sensor;
 import org.wanja.hue.remote.Light;
 
 import io.quarkus.qute.Template;
@@ -27,13 +28,33 @@ public class PublicRenderResource {
     @Inject
     PublicApiResource api;
 
+    private List<Sensor> allTemperatureSensors() throws Exception {
+        List<Sensor> temperatur = api.allSensorsByType("ZLLTemperature");
+        for(Sensor s : temperatur){
+            s.state = api.sensorById(s.id).state;
+        }
+        return temperatur;
+    }
+
     @GET
     @Path("/index")
-    public TemplateInstance renderIndex() {
+    public TemplateInstance renderIndex() throws Exception {
         Log.infof("Rendering index page");
+        List<Room> emptyRooms = api.allRooms();
+        List<Light> allLights = new ArrayList<Light>();
+        List<Room> rooms = new ArrayList<Room>(emptyRooms.size());
+        for(Room r : emptyRooms ){
+            rooms.add(api.roomByName(r.name));
+            allLights.addAll(r.allLights);
+        }
+
         TemplateInstance ti = index.data("state", "index");
-        ti.data("rooms", api.allRooms());
+        ti.data("rooms", rooms);
         ti.data("selectedRoom", null);
+        ti.data("bridges", api.allBridges(true));
+        ti.data("sensors", api.allSensors());
+        ti.data("lights", allLights);
+        ti.data("temperatureSensors", allTemperatureSensors());
         return ti;
     }
 
@@ -54,6 +75,7 @@ public class PublicRenderResource {
         TemplateInstance ti = index.data("state", "room");
         ti.data("rooms", rooms);
         ti.data("selectedRoom", selected);
+        ti.data("temperatureSensors", allTemperatureSensors());
         return ti;
     }
 
@@ -62,7 +84,7 @@ public class PublicRenderResource {
     public TemplateInstance renderFavorites() throws Exception {
         Log.infof("Rendering Favorites");
         List<Room> emptyRooms = api.allRooms();
-        List<Light> allLights = new ArrayList();
+        List<Light> allLights = new ArrayList<Light>();
         List<Room> rooms = new ArrayList<Room>(emptyRooms.size());
         for(Room r : emptyRooms ){
             rooms.add(api.roomByName(r.name));
@@ -71,6 +93,7 @@ public class PublicRenderResource {
         TemplateInstance ti = index.data("state", "favorites");
         ti.data("rooms", rooms);
         ti.data("allLights", allLights);
+        ti.data("temperatureSensors", allTemperatureSensors());
         return ti;
     }
 
@@ -79,7 +102,7 @@ public class PublicRenderResource {
     public TemplateInstance renderAllRooms() throws Exception {
         Log.infof("Rendering all Rooms");
         List<Room> emptyRooms = api.allRooms();
-        List<Light> allLights = new ArrayList();
+        List<Light> allLights = new ArrayList<Light>();
         List<Room> rooms = new ArrayList<Room>(emptyRooms.size());
         for (Room r : emptyRooms) {
             rooms.add(api.roomByName(r.name));
@@ -88,7 +111,20 @@ public class PublicRenderResource {
         TemplateInstance ti = index.data("state", "all-rooms");
         ti.data("rooms", rooms);
         ti.data("allLights", allLights);
+        ti.data("temperatureSensors", allTemperatureSensors());
         return ti;
     }
 
+    @GET
+    @Path("/sensors")
+    public TemplateInstance renderSensors() throws Exception {
+        Log.infof("Rendering sensors");
+        TemplateInstance ti = index.data("state", "sensors");
+        ti.data("rooms", api.allRooms());
+        ti.data("sensors", api.allSensors());
+        ti.data("selectedRoom", null);
+        ti.data("bridges", api.allBridges(true));
+        ti.data("temperatureSensors", allTemperatureSensors());
+        return ti;
+    }
 }

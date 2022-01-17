@@ -24,3 +24,7 @@ hs_err_pid*
 
 # target files
 target/
+
+.DS_Store
+.vscode/
+

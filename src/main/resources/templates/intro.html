@@ -3,12 +3,119 @@
         <div class="bg-white p-6 text-center">
 
             <p class="text-leader2">
-                FAVORITE LIGHTS
+                DATABASE INFO
             </p>
         </div>
         <div class="m-2"></div>
 
+
         <div class="bg-white p-2">
+            <p>
+            <h2>Bridges</h2>
+            </p>
+            <table class="table striped table-border mt-4" data-role="table" data-search-fields="Name,Type">
+                <thead>
+                    <tr>
+                        <th data-sortable="true">Name</th>
+                        <th data-sortable="true">Number</th>
+                        <th data-sortable="true">Base URL</th>
+                        <th data-sortable="true">Model ID</th>
+                        <th data-sortable="true">MAC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#for sensor in bridges}
+                    <tr>
+                        <td>{sensor.name}</td>
+                        <td>{sensor.bridgeNumber}</td>
+                        <td>{sensor.baseURL}</td>
+                        <td>{sensor.modelid}</td>
+                        <td>{sensor.mac}</td>
+                    </tr>
+                    {/for}
+                </tbody>
+            </table>
         </div>
+
+        <div class="bg-white p-2">
+            <p><h2>Sensors</h2></p>
+            <table class="table striped table-border mt-4" data-role="table" data-search-fields="Name,Type,Bridge">
+                <thead>
+                    <tr>
+                        <th data-sortable="true">Name</th>
+                        <th data-sortable="true">Type</th>
+                        <th data-sortable="true">Product ID</th>
+                        <th data-sortable="true">Model ID</th>
+                        <th data-sortable="true">Manufacturer</th>
+                        <th data-sortable="true">Bridge</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {#for sensor in sensors}
+                <tr>
+                    <td>{sensor.name}</td>
+                    <td>{sensor.type}</td>
+                    <td>{sensor.productname}</td>
+                    <td>{sensor.modelid}</td>
+                    <td>{sensor.manufacturername}</td>
+                    <td>{sensor.bridge.name}</td>
+                </tr>
+                {/for}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bg-white p-2">
+            <p>
+            <h2>Lights</h2>
+            </p>
+            <table class="table striped table-border mt-4" data-role="table" data-search-fields="Name,Type">
+                <thead>
+                    <tr>
+                        <th data-sortable="true">Name</th>
+                        <th data-sortable="true">Type</th>
+                        <th data-sortable="true">Product ID</th>
+                        <th data-sortable="true">Model ID</th>
+                        <th data-sortable="true">Manufacturer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#for sensor in lights}
+                    <tr>
+                        <td>{sensor.name}</td>
+                        <td>{sensor.type}</td>
+                        <td>{sensor.productname}</td>
+                        <td>{sensor.modelid}</td>
+                        <td>{sensor.manufacturername}</td>
+                    </tr>
+                    {/for}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bg-white p-2">
+            <p>
+            <h2>Rooms</h2>
+            </p>
+            <table class="table striped table-border mt-4" data-role="table" data-search-fields="Name,Bridge">
+                <thead>
+                    <tr>
+                        <th data-sortable="true">Name</th>
+                        <th data-sortable="true">Type</th>
+                        <th data-sortable="true">Bridge</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#for sensor in rooms}
+                    <tr>
+                        <td>{sensor.name}</td>
+                        <td>{sensor.type}</td>
+                        <td>{sensor.bridge.name}</td>
+                    </tr>
+                    {/for}
+                </tbody>
+            </table>
+        </div>
+
     </div>
 </div>

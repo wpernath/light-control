@@ -21,6 +21,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
+import org.eclipse.microprofile.rest.client.RestClientDefinitionException;
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 import org.wanja.hue.config.HueBridgeConfig;
 import org.wanja.hue.config.HueBridgeConfig.HueBridge;
@@ -29,6 +31,7 @@ import org.wanja.hue.remote.Bridge;
 import org.wanja.hue.remote.HueLightsService;
 import org.wanja.hue.remote.Light;
 import org.wanja.hue.remote.Room;
+import org.wanja.hue.remote.Sensor;
 import org.wanja.hue.remote.State;
 
 import io.quarkus.panache.common.Sort;
@@ -45,12 +48,13 @@ public class PublicApiResource {
     @Inject
     HueBridgeConfig bridgeConfig;
 
-    Map<Long, HueLightsService> cachedBridges = new HashMap();
+    Map<Long, HueLightsService> cachedBridges = new HashMap<Long, HueLightsService>();
 
-    HueLightsService hueServiceByBridge(Bridge b) throws MalformedURLException {
+    HueLightsService hueServiceByBridge(Bridge b) throws IllegalStateException, RestClientDefinitionException, MalformedURLException  {
         HueLightsService service = cachedBridges.get(b.id);
 
         if( service == null ) {
+            
             service = RestClientBuilder.newBuilder()
                     .baseUrl(new URL(b.baseURL + b.authToken))
                     .build(HueLightsService.class);
@@ -70,9 +74,10 @@ public class PublicApiResource {
     public void deleteDatabase() throws Exception {
         Log.info("Deleting Database...");
         cachedBridges.clear();
-        List<Bridge> bridges = allBridges();
+        List<Bridge> bridges = allBridges(false);
         List<Room> rooms = allRooms();
-
+        List<Sensor> sensors = allSensors();
+        
         Log.infof("Deleting %d rooms", rooms.size());
         for( Room r : rooms ) {
             Log.infof("Deleting Room %s", r.name);
@@ -81,6 +86,12 @@ public class PublicApiResource {
                 Log.infof("Deleting Light %s", l.name);
                 l.delete();
             }
+        }
+
+        Log.infof("Deleting %d sensors", sensors.size());
+        for( Sensor s : sensors) {
+            Log.infof("Deleting Sensor %s", s.name);
+            s.delete();
         }
 
         Log.infof("Deleting %d bridges", bridges.size());
@@ -104,8 +115,9 @@ public class PublicApiResource {
         int bridgeNum = 0;
         long roomNum = 0;
         long lightNum = 0;
+        long sensorNum = 0;
 
-        if( !allBridges().isEmpty()) {
+        if( !allBridges(false).isEmpty()) {
             Log.infof("This Database is already initialized. Call DELETE first, if you want to reinitialize the DB!");
             return;
         }
@@ -143,14 +155,67 @@ public class PublicApiResource {
                     l.persist();
                 }
             }
+
+            Log.infof("Scanning sensors on bridge %s", b.name);
+            List<Sensor> sensors = lightService.allSensors(hueService);
+            for( Sensor s : sensors) {
+                s.bridge = b;
+                Log.infof("Creating Sensor %s of Type %s on Bridge %s", s.name, s.type, b.name);
+                s.config.persist();
+                s.bridgeId = b.id;
+                s.bridgeNumber = b.bridgeNumber;
+                s.persist();
+                sensorNum++;
+            }
         }
-        Log.infof("Initialized Database with %d Bridges, %d Rooms and %d Lights.", bridgeNum, roomNum, lightNum);
+        Log.infof("Initialized Database with %d Bridges, %d Rooms, %d Sensors and %d Lights.", bridgeNum, roomNum, sensorNum, lightNum);
     }
 
     @GET
     @Path("/bridge")
-    public List<Bridge> allBridges() {
-        return Bridge.findAll(Sort.by("bridgeNumber").ascending()).list();
+    public List<Bridge> allBridges(@QueryParam("full") Boolean full ) throws Exception {
+        List<Bridge> bridges =  Bridge.findAll(Sort.by("name").ascending()).list();
+        if( full != null && full.booleanValue()) {
+            for( Bridge b : bridges ) {
+                HueLightsService service = hueServiceByBridge(b);
+                Bridge bridgeInfo   = service.getBridgeInfo();
+                b.apiversion        = bridgeInfo.apiversion;
+                b.bridgeid          = bridgeInfo.bridgeid;
+                b.datastoreversion  = bridgeInfo.datastoreversion;
+                b.mac               = bridgeInfo.mac;
+                b.modelid           = bridgeInfo.modelid;
+                b.swversion         = bridgeInfo.swversion;
+            }
+        }
+        return bridges;
+    }
+
+
+    //@GET 
+    //@Path("/sensors")
+    public List<Sensor> allSensors() {
+        List<Sensor> sensors = Sensor.findAll(Sort.by("bridgeNumber").ascending()).list();
+        return sensors;
+    }
+
+    @GET
+    @Path("/sensors") 
+    public List<Sensor> allSensorsByType(@QueryParam String type) {
+        if( type == null ) return allSensors();
+        else {
+            List<Sensor> sensors = Sensor.find("type", Sort.by("name"), type).list();
+            return sensors;
+        }
+    }
+    
+    @GET
+    @Path("/sensors/{id}")
+    public Sensor sensorById(@PathParam Long id) throws Exception {
+        Sensor sensor   = Sensor.findById(id);
+        Sensor full     = lightService.findSensorById(hueServiceByBridge(sensor.bridge), sensor.sensorNumber);
+        sensor.config   = full.config;
+        sensor.state    = full.state;
+        return sensor;
     }
 
     @GET
@@ -249,5 +314,6 @@ public class PublicApiResource {
         state.bri = bri;
         lightService.setRoomScene(service, room.number, state);
     }
+
 
 }

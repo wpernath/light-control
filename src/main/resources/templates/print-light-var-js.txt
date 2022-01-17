@@ -18,3 +18,12 @@
                 {/if}
                 {/if}
             },
+    {#if state is 'room'}
+        {#for light in selectedRoom.allLights.orEmpty}
+            {#include print-light-var-js /}
+        {/for}
+    {#else if state is 'favorites'}
+        {#for light in allLights.orEmpty}
+            {#include print-light-var-js /}
+        {/for}
+    {/if}

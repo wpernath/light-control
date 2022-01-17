@@ -12,4 +12,11 @@ public class Bridge extends PanacheEntity {
     public String baseURL;
     public String authToken;
 
+    public String apiversion;
+    public String bridgeid;
+    public String datastoreversion;
+    public String mac;
+    public String modelid;
+    public String swversion;
+
 }
