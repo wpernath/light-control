@@ -17,3 +17,113 @@ All UI calls are relative to `/ui/` and are generated via Qute by `org.wanja.hue
 
 The main qute template is `src/main/resources/templates/index.html`. It includes other content templates based on state (`favorites.html`, `room.html`). It also makes use of `javascript.txt` template.
 
+## Build & Run
+### Configure your `src/main/resources/application.properties`
+Configure any number of Hue Bridges like:
+
+```
+hue.bridges[n].name = <bridge name>
+hue.bridges[n].base-url=http://192.168.2.126/api/
+hue.bridges[n].auth-token=<your auth token>
+```
+
+where `n` is between `0 and maxint`. 
+
+### Build & debug
+In order to build this project, you need to have
+- Maven 
+- Java 11
+- Docker Desktop
+
+
+```bash
+$> mvn clean quarkus:dev
+```
+
+This builds the project and starts light-control in Quarkus Dev Mode.
+
+### Build Container Image to run it on Kubernetes / OpenShift
+This builds and pushes the container image into your registry. 
+
+```bash
+$> mvn package -Dquarkus.container-image.push=true \
+               -Dquarkus.container-image.image=quay.io/<yourid>/light-control:v1.0.3
+```
+**NOTE:** You could define any container-image.image here. And any docker-compliant registry. I am using Quay.io here. 
+
+Quarkus is also generating Kubernetes / OpenShift files, which you can find in `target/kubernetes`. To run this on one of those Container platforms, simply execute the following:
+
+```bash
+$> kubectl apply -f target/kubernetes/[openshift|kubernetes].yml
+```
+
+Please keep in mind that you first need to install a PostgreSQL database instance in the same namespace. Do this on for example OpenShift via:
+
+```bash
+$> oc new-app postgresql-persistent \
+	-p POSTGRESQL_USER=<your user> \
+	-p POSTGRESQL_PASSWORD=<your password> \
+	-p POSTGRESQL_DATABASE=lightsdb \
+	-p DATABASE_SERVICE_NAME=lightsserver
+```
+
+But you could also install Crunchy's PostgreSQL Operator and install an instance from them.
+
+And finally, you either need to change `application.properties` again and change the connection settings or you need to specify the following ENV variables to the Kubernetes Deployment:
+
+- `DB_USER`
+- `DB_PASSWORD`
+- `DB_DATABASE`
+- `DB_HOST`
+
+### Filling the database
+Right now, light-control does not provide an UI interface to scan the database, so you have to do it manually by sending a POST request to `http://<url>/api/bridge/init`. For example via `httpie`:
+
+```bash
+$> http POST :8080/api/bridge/init
+```
+
+This will fill the local database when you're running quarkus:dev.
+
+## Running the UI
+The UI is available under `http://localhost:8080/ui/index` and should be self explaining, although still a technical preview, as I am by far no front end designer. 
+
+## Playing with the API
+Everything is available via API. Starting URL is `/api`. 
+
+- GET /api/bridge
+  - Consumes: application/json
+  - Produces: application/json
+- DELETE /api/bridge/init
+  - Consumes: application/json
+  - Produces: application/json
+- POST /api/bridge/init
+  - Consumes: application/json
+  - Produces: application/json
+- GET /api/lights/q
+  - Consumes: application/json
+  - Produces: application/json
+- PUT /api/lights/q
+  - Consumes: application/json
+  - Produces: application/json
+- GET /api/lights/toggle
+  - Consumes: text/plain
+  - Produces: application/json
+- GET /api/rooms
+  - Consumes: application/json
+  - Produces: application/json
+- GET /api/rooms/q
+  - Consumes: application/json
+  - Produces: application/json
+- PUT /api/rooms/q
+  - Consumes: application/json
+  - Produces: application/json
+- GET /api/rooms/toggle
+  - Consumes: text/plain
+  - Produces: application/json
+- GET /api/sensors
+  - Consumes: application/json
+  - Produces: application/json
+- GET /api/sensors/{id}
+  - Consumes: application/json
+  - Produces: application/json
