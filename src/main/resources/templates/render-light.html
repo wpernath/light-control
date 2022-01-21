@@ -1,20 +1,34 @@
-<div class="row flex-align-start">
+<div class="row flex-align-center">
     <div class="cell">
-        {#if light.state.on}
-        <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png"
-            class="icon h-48 w-48" />
-        {#else}
-        <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-off.png"
-            class="icon h-48 w-48" />
-        {/if}
+
+        <a id="light_{light.id}" data-role="tile" data-size="medium" data-effect="hover-zoom-right" class="bg-white"
+            onclick="toggleLightState({light.id}, {light.state.on ? false : true}, {light.state.bri}, true); ">
+            <div class="slide-front">
+                {#if light.state.on }
+                <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png"
+                    class="icon h-48 w-48" />
+                {#else}
+                <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-off.png"
+                    class="icon h-48 w-48" />
+                {/if}
+            </div>
+            <div class="slide-back d-flex flex-justify-center flex-align-center p-4 op-mauve">
+                <p class="text-center">
+                    {light.productname}
+                </p>
+            </div>
+            <span class="branding-bar fg-dark small">{light.name}</span>
+        </a>
     </div>
-    <div class="cell">
-        <input type="checkbox" data-caption="{light.name}" data-role="switch" data-on="on" {#if light.state.on } checked
-            {/if} onclick="toggleLightState({light.id}, this.checked, {light.state.bri}, true);" />
-    </div>
-    <div class="cell">
-        <input data-role="slider" data-min="1" data-max="254" data-show-min-max="true" data-value="{light.state.bri}"
-            data-hint="true" data-on="true"
+    <div class="cell flex-align-center">
+        <input id="bri_{light.id}" data-role="slider" class="cycle-marker" data-min="0" data-max="254" data-show-min-max="false" data-value="{light.state.bri}"
+            data-hint="true" data-hint-always="true" data-hint-position="bottom" data-hint-mask="Brightness: $1"
+            data-cls-backside="bg-dark"
+            data-cls-marker="bg-blue border-50 custom-marker"
+            data-cls-hint="bg-cyan custom-marker shadow-2"
+            data-cls-complete="bg-red"
+            data-cls-buffer="bg-yellow"            
+            {#if !light.state.on } disabled {/if}
             data-on-change="toggleLightState({light.id}, {light.state.on}, this.value, false);">
     </div>
 </div>

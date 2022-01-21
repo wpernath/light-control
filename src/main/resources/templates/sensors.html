@@ -1,0 +1,85 @@
+<div class="m-3">
+    <div class="">
+        <div class="bg-cyan fg-white p-6 text-center">
+
+            <p class="text-leader2">
+                <h2>Sensors</h2>
+            </p>
+        </div>
+        <div class="m-2"></div>
+
+        <div class="container bg-white">
+
+            <div class="bg-white p-2">
+                <table class="table striped row-hover table-border mt-4" data-role="table" data-search-fields="Name,Type,Bridge">
+                    <thead>
+                        <tr>
+                            <th data-sortable="true">ID</th>
+                            <th data-sortable="true">Name</th>
+                            <th data-sortable="true">Type</th>
+                            <th data-sortable="true">Product ID</th>
+                            <th data-sortable="true">Model ID</th>
+                            <th data-sortable="true">Manufacturer</th>
+                            <th data-sortable="true">Bridge</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#for sensor in sensors}
+                        <tr>
+                            <td>{sensor.id}</td>
+                            <td><a href="#" onclick="updateSensorDetails('{sensor.id}');">{sensor.name}</a></td>
+                            <td>{sensor.type}</td>
+                            <td>{sensor.productname}</td>
+                            <td>{sensor.modelid}</td>
+                            <td>{sensor.manufacturername}</td>
+                            <td>{sensor.bridge.name}</td>
+                        </tr>
+                        {/for}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-white p-2">
+                <h3>Sensor Details</h3>
+                <form>
+                    <input id="sensor_id" type="hidden" />
+                    <div class="form-group">
+                        <label>Display Name:</label>
+                        <input id="sensor_name" data-role="input" type="text" placeholder="Display Name" />
+                    </div>
+
+                    <div class="form-group">
+                        <input id="sensor_fav" data-role="checkbox" type="checkbox" data-caption="Is Favorite?" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Type:</label>
+                        <input id="sensor_type" data-role="input" type="text" disabled placeholder="Type" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Product Name:</label>
+                        <input id="sensor_product" data-role="input" type="text" disabled placeholder="Product" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Associated Room:</label>
+                        <select id="room_name" data-role="select" disabled >
+                            <option></option>
+{#for room in rooms}
+                            <option>{room.name}</option>
+{/for}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="button success" onclick="saveSensorForm();" >Save</button>
+                        <input type="button" class="button" value="Cancel" onclick="clearSensorForm();">
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>

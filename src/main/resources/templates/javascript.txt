@@ -122,8 +122,8 @@
     }
 
     function toggleRoom(roomId, bri, onlyLight) {
-        var room = findRoomById(roomId);
-        var state;
+        let room = findRoomById(roomId);
+        let state;
         if( room ) {
             if( onlyLight ){
                 room.on = !room.on;
@@ -145,16 +145,27 @@
             }).then(
                 function(response){
                     console.log("Room = {" + roomId + ", " + state + ", " + bri + "};" );
-                    var images = new Array(1+room.lights.length);
+                    let images = new Array(1+room.lights.length);
+                    let slids  = new Array(room.lights.length);
                     images[0] = "img_room_" + roomId;
 
                     for( var i = 0; i < room.lights.length; i++ ) {
                         images[i+1] = "img_light_" + room.lights[i].id;
+                        slids[i]    = "bri_" + room.lights[i].id;
                     }
 
-                    for( var i=0; i < images.length; i++ ){
+                    // reset brightness sliders
+                    for(let i=0; i < slids.length; i++ ) {
+                        let slid = document.getElementById(slids[i]);
+                        if( slid ) {
+                            slid.disabled = !state;
+                            slid.value    = room.lights[i].bri;
+                        }
+                    }
 
-                        var img = document.getElementById(images[i]);
+                    // reset images
+                    for( let i=0; i < images.length; i++ ){
+                        let img = document.getElementById(images[i]);
                         if( img ) {
                             var imgName;
                             if( state ) {
@@ -206,16 +217,19 @@
                 function(response){
                     console.log("Light = {" + lightId + ", " + state + ", " + bri + "};" );
 
-                    var img = document.getElementById("img_light_"+lightId);
+                    let img = document.getElementById("img_light_"+lightId);
+                    let slid = document.getElementById("bri_" + lightId);
                     if( img ) {
                         var imgName;
                         if( state ) {
-                            imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png"
+                            imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png"                            
                         }
                         else {
                             imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png"
                         }
                         img.src = imgName;
+                        slid.disabled=!state;
+                        slid.value = light.bri;
                         console.log("Image for " + img.id + " set to " + imgName);
                     }
 
@@ -227,4 +241,100 @@
         }        
     }
 
+{#if state is 'sensors'}
+
+
+var sensors = [
+    {#for sensor in sensors}
+    {
+        id: {sensor.id},
+        name: '{sensor.name}',
+        type: '{sensor.type}',
+        productname: '{sensor.productname}',
+        uniqueid: '{sensor.uniqueid}',
+        isFavorite: {sensor.isFavorite},
+        
+    },
+    {/for}
+]
+
+    function updateSensorDetails(id) {
+        console.log("updateSensor called with id = '" + id + "'");
+        let sensor;
+        for(let i = 0; i < sensors.length; i++ ){
+            if( sensors[i].id == id) {
+                sensor = sensors[i];
+                console.log("found sensor: " + sensor);
+
+                // update form elements
+                document.getElementById("sensor_name").value = sensor.name;
+                document.getElementById("sensor_type").value = sensor.type;
+                document.getElementById("sensor_id").value = sensor.id;
+                document.getElementById("sensor_product").value = sensor.productname;
+                document.getElementById("sensor_fav").checked = sensor.isFavorite;
+                break;
+            }
+        }
+    }
+
+    function clearSensorForm() {
+        console.log("clearSensorForm()");
+        // update form elements
+        document.getElementById("sensor_name").value = '';
+        document.getElementById("sensor_type").value = '';
+        document.getElementById("sensor_id").value = '';
+        document.getElementById("sensor_product").value = '';
+        document.getElementById("sensor_fav").checked = false;
+
+    }
+
+    function saveSensorForm() {
+        let sensor;
+        let id = document.getElementById("sensor_id").value;
+        if( !id ) {
+            console.log("nothing selected to save");
+        }
+        for(let i = 0; i < sensors.length; i++ ){
+            if( sensors[i].id == id) {
+                sensor = sensors[i];
+                console.log("found sensor: " + sensor);
+
+                // update form elements
+                sensor.name = document.getElementById("sensor_name").value;
+                sensor.isFavorite = document.getElementById("sensor_fav").checked;
+
+                $.ajaxSetup({
+                    contentType: 'application/json',
+                    processData: false
+                });
+
+                $.ajaxPrefilter(function(options, originalOptions, jqXHR){
+                    if( options.data){
+                        options.data=JSON.stringify(options.data);
+                    }
+                });
+
+                $.ajax({
+                    url: "/api/sensors/" + id,
+                    method: "PUT",
+                    data: {
+                        newName: sensor.name,
+                        isFavorite: sensor.isFavorite
+                    }
+                }).then(
+                    function(response){
+                        console.log("Sensor " + id + " updated on server" );
+                        window.location.reload(true);
+                        clearSensorForm();
+                    },
+                    function(xhr){
+                        console.log(xhr.status, xhr.statusText);
+                    }
+                );
+
+                break;
+            }
+        }
+    }
+{/if}
 </script>

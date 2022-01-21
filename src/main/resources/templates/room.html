@@ -1,29 +1,29 @@
 <div class="m-3">
     <div class="">
-        <div class="bg-white p-6 text-center">
+        <div class="bg-cyan fg-white p-6 text-center">
 
             <div class="grid">
                 <div class="row flex-justify-start flex-align-start">
                     <div class="cell-1 flex-align-self-start">
                         <img src="https://img.icons8.com/color/48/000000/lounge.png" />
                     </div>
-                    <div class="cell-7 flex-align-self-center">
+                    <div class="cell-10 flex-align-self-center">
                         <p class="text-leader2">
-                            <b>{selectedRoom.name}</b>
+                            <h2>{selectedRoom.name}</h2>
                         </p>
-                    </div>
-                    <div class="cell-3 flex-align-self-center">
-                        <table border="0">
-                        {#for sensor in temperatureSensors}
-                        <tr>
-                            <td align="right"><b>{sensor.name}:</b></td>
-                            <td>&nbsp;</td>
-                            <td align="right">{sensor.state.printableTemperature}°C</td>
-                        </tr>
-                        {/for}
+
+                        <table class="border" border="1" align="center" width="100%" >
+                            {#for sensor in temperatureSensors}
+                            <tr align="center" class="border">
+                                <td align="right" width="200" class="border"><b>{sensor.name}:</b></td>
+                                <td width="15">&nbsp;</td>
+                                <td align="right" width="100">{sensor.state.printableTemperature}°C</td>
+                            </tr>
+                            {/for}
                         </table>
                     </div>
-                    <div class="cell-1 flex-align-self-center">
+                    <div  id="room_{selectedRoom.id}" class="cell-1 flex-align-self-center"
+                    onmouseover="$('#room_{selectedRoom.id}').toggleClass('border');" onmouseout="$('#room_{selectedRoom.id}').toggleClass('border');" >
                         <a href="#" onclick="toggleRoom({selectedRoom.id}, {selectedRoom.action.bri}, true);">
                         
                             {#if selectedRoom.action.on}

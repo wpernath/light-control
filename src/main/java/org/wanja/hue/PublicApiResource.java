@@ -32,6 +32,7 @@ import org.wanja.hue.remote.HueLightsService;
 import org.wanja.hue.remote.Light;
 import org.wanja.hue.remote.Room;
 import org.wanja.hue.remote.Sensor;
+import org.wanja.hue.remote.SensorConfig;
 import org.wanja.hue.remote.State;
 
 import io.quarkus.panache.common.Sort;
@@ -216,6 +217,19 @@ public class PublicApiResource {
         sensor.config   = full.config;
         sensor.state    = full.state;
         return sensor;
+    }
+
+    
+    @PUT
+    @Path("/sensors/{id}")
+    @Transactional
+    public void updateSensorById(@PathParam Long id, SensorConfig state) throws Exception {
+        Log.infof("Updating Sensor %d with new name %s", id, state.newName);
+        Sensor sensor = Sensor.findById(id);
+        sensor.name   = state.newName;
+        if( state.isFavorite != null) {
+            sensor.isFavorite = state.isFavorite;
+        }
     }
 
     @GET

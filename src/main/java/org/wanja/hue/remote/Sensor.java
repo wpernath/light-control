@@ -22,6 +22,7 @@ public class Sensor extends PanacheEntity {
     public String type;
     public String swversion;
     public String uniqueid;
+    public Boolean isFavorite = true;
 
     @OneToOne
     public SensorConfig config;

@@ -7,6 +7,9 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 @Entity
 public class SensorConfig extends PanacheEntity {
+    public String newName;
+    public Boolean  isFavorite;
+    
     public String alert;
     public Integer battery;
 

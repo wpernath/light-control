@@ -42,6 +42,7 @@
             <table class="table striped table-border mt-4" data-role="table" data-search-fields="Name,Type,Bridge">
                 <thead>
                     <tr>
+                        <th data-sortable="true">ID</th>
                         <th data-sortable="true">Name</th>
                         <th data-sortable="true">Type</th>
                         <th data-sortable="true">Product ID</th>
@@ -53,6 +54,7 @@
                 <tbody>
                 {#for sensor in sensors}
                 <tr>
+                    <td>{sensor.id}</td>
                     <td>{sensor.name}</td>
                     <td>{sensor.type}</td>
                     <td>{sensor.productname}</td>
