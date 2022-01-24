@@ -132,6 +132,17 @@
         }
     }
 
+    function allLightsOff() {
+        console.log("allLightsOff()");
+        for( let i=0; i < allLights.length; i++) {
+            let light = allLights[i];
+            if( light.on ) {
+                light.on = false;
+                updateLightState(light);
+            }
+        }
+    }
+
     /**
      * This function is calling the server to update the light on the hue bridges 
      */

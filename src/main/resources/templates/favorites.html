@@ -1,37 +1,93 @@
 <div class="m-3">
-    <div class="">
-        <div class="bg-white p-6 text-center">
+<div class="m-2">
+    <div data-role="gradient-box" data-gradient-position="40px 40px" data-gradient-size="farthest-corner"
+        data-gradient-type="radial" class="fg-white p-6 ">
+        <div class="grid">
+            <div class="row">
+                <div class="cell-12">
+                    <h2>Favorite Lights</h2>
+                </div>
+            </div>
 
-            <p class="text-leader2">
-                <b>ALL LIGHTS</b>
-            </p>
+
+            <!-- rounded info boxes with lights and Temp -->
+            <div class="row pr-2 flex-justify-center">
+                <div class="cell" style="width: 80px">
+                    <a href="#" onclick="allLightsOff();">
+                        <div id="fav_lights"
+                            class="border bd-darkCyan border-size-2 border-double border-radius-half  bg-white fg-black bg-cobalt-hover bg-darkCobalt-active"
+                            style="width: 60px; height: 60px">
+                            <div class="pt-1 pl-1">
+                                <img id="fav_lights_img" src="https://img.icons8.com/color-glass/48/000000/light-on.png"
+                                    class="icon h-48 w-48" />
+                            </div>                            
+                        </div>
+                    </a>
+                    <div class="text-left text-secondary text-medium">All lights off </div>
+                </div>
+
+                
+                {#for sensor in temperatureSensors}
+                <div class="cell" style="width: 80px">
+                    <div class="border bd-lightCyan border-size-2 border-double border-radius-half  bg-white fg-black bg-cobalt-hover"
+                        style="width: 60px; height: 60px">
+                        <div class="mt-4">
+                            <p class="text-center fg-black text-bold">{sensor.state.printableTemperature}°</p>
+                        </div>
+                    </div>
+                    <div class="text-left text-secondary text-medium">{sensor.name}</div>
+                </div>
+                {/for}
+            </div>
         </div>
-        <div class="m-2"></div>
+    </div>
+</div>
+<div class="m-2 bg-darkGray">
 
-        <div class="bg-white p-2">
-            <div class="tiles-grid">
-                    {#for room in rooms}
-                        {#for light in room.allLights } 
-                            <a id="light_{light.id}" data-role="tile" data-size="medium" data-effect="hover-zoom-right" class="bg-white"  
-                            onclick="toggleLightOnOff({light.id}); " 
-                            >
-                                <div class="slide-front">
+    <div data-role="gradient-box" data-gradient-position="40px 40px" data-gradient-size="farthest-corner"
+        data-gradient-type="radial" class="fg-white p-6">
+
+        <div class="grid">
+            <div class="row">
+            {#for room in rooms}
+            {#for light in room.allLights}
+            
+                <div class="cell-3">
+                    <a href="#"
+                        onclick="toggleLightOnOff({light.id}); ">
+                        <div id="div_light_{light.id}"
+                            class="mt-2 border border-size-1 bd-lightCyan border-radius-4 {#if light.state.on }bg-white fg-black{#else}fg-white bg-black{/if} bg-cobalt-hover bg-darkCobalt-active"
+                            style="width: 120px; height: 120px; opacity: 1">
+                            <div class="m2">
+                                <div class="pl-2 pt-1">
                                     {#if light.state.on }
-                                    <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png" class="icon h-48 w-48"/>
+                                    <img id="img_light_{light.id}"
+                                        src="https://img.icons8.com/color-glass/48/000000/light-on.png"
+                                        class="icon h-48 w-48" />
                                     {#else}
-                                    <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-off.png" class="icon h-48 w-48"/>
+                                    <img id="img_light_{light.id}"
+                                        src="https://img.icons8.com/color-glass/48/000000/light-off.png"
+                                        class="icon h-48 w-48" />
                                     {/if}
                                 </div>
-                                <div class="slide-back d-flex flex-justify-center flex-align-center p-4 op-mauve">
-                                    <p class="text-center">
-                                        {room.name}
-                                    </p>
+                                <div class="pl-2 ">
+                                    <span class="text-left text-secondary text-bold">
+                                        <p class="text-ellipsis">{light.name}<br/><span class="text-medium text-ellipsis">{room.name}</span></p>
+                                        
+                                    </span>
                                 </div>
-                                <span class="branding-bar fg-dark">{light.name}</span>
-                            </a>
-                        {/for}
-                    {/for}
-
+                                <div class="pl-2">
+                                    <span id="state_{light.id}" class="text-left text-secondary text-medium">
+                                        {#if light.state.on}{light.state.brightnessPercentString} %{#else}Off{/if}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            
+            {/for}
+            {/for}
             </div>
         </div>
     </div>
