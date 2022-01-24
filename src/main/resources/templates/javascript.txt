@@ -1,7 +1,6 @@
 
-<script>    
     class Light {
-        constructor(id, name, modelid, productid, productname, manufacturername, on, bri, hue, sat, colormode, xy) {
+        constructor(id, name, modelid, productid, productname, manufacturername, on, reachable, bri, hue, sat, colormode, xy) {
             this.id = id;
             this.name = name;
             this.modelid = modelid;
@@ -9,6 +8,7 @@
             this.productname = productname;
             this.manufacturername = manufacturername;
             this.on = on;
+            this.reachable = reachable;
             this.bri = bri ;
             this.hue = hue;
             this.sat = sat;
@@ -46,6 +46,24 @@
             }
             return undefined;
         }
+
+        hasLittenBulbs() {
+            for(var i=0; i < this.lights.length; i++) {
+                var light = this.lights[i];
+                if( light.on ) return true;
+            }
+            return false;
+        }
+
+        numberOfLittenBulbs() {
+            let num = 0;
+            for(var i=0; i < this.lights.length; i++) {
+                var light = this.lights[i];
+                if( light.on ) num++;
+            }            
+            return num;
+        }
+        
     }  
 
 
@@ -61,6 +79,7 @@
                 '{light.productname}',
                 '{light.manufacturername}',
                 {#if light.state != null }{#if light.state.on != null }{light.state.on}{#else}false{/if},
+                {#if light.state.reachable != null }{light.state.reachable}{#else}true{/if},
                 {#if light.state.bri != null }{light.state.bri}{#else}undefined{/if},
                 {#if light.state.hue != null }{light.state.hue}{#else}undefined{/if},
                 {#if light.state.sat != null }{light.state.sat}{#else}undefined{/if},
@@ -73,16 +92,13 @@
             ))
             {/for},
         {/for}
-    ];
-
-
-    console.log(rooms[1]);
+    ];    
     
     const selectedState    = '{state}';
     {#if state is 'room' }
     const selectedRoomName = '{selectedRoom.name}';
     const selectedRoomId   = {selectedRoom.id};
-    const selectedRoom     = findRoomById({selectedRoom.id})
+    const selectedRoom     = findRoomById({selectedRoom.id});
     {#else}
     const selectedRoomName = '';
     const selectedRoomId   = -1;        
@@ -100,172 +116,8 @@
         }
     }
     
-    function findLightById(lightId) {
-        for( var i=0; i < allLights.length; i++ ){
-            if( allLights[i].id == lightId) {
-                return allLights[i];
-            }
-        }
-        return null;
-    }
-
-    function findRoomById(roomId) {
-        for(var i=0; i < rooms.length; i++) {
-            if( rooms[i].id == roomId) {
-                return rooms[i];
-            }
-        }
-        return null;
-    }
-
-
-    function roomHasLittenBulbs(roomId) {
-        var room = findRoomById(roomId);
-        if( room ) {
-            for(var i=0; i < room.lights.length; i++) {
-                var light = room.lights[i];
-                if( light.on ) return true;
-            }
-        }
-        return false;
-    }
-
-    function toggleRoom(roomId, bri, onlyLight) {
-        let room = findRoomById(roomId);
-        let state;
-        if( room ) {
-            if( onlyLight ){
-                room.on = !room.on;
-                bri = room.bri;
-            }
-
-            state = room.on;
-            $.ajax({
-                url: "/api/rooms/toggle",
-                method: "GET",
-                headers: {
-                    "Content-Type": "text/plain"                    
-                },
-                data: {
-                    "id": roomId,
-                    "on": room.on,
-                    "bri": bri
-                }
-            }).then(
-                function(response){
-                    console.log("Room = {" + roomId + ", " + state + ", " + bri + "};" );
-                    let images = new Array(1+room.lights.length);
-                    let slids  = new Array(room.lights.length);
-                    images[0] = "img_room_" + roomId;
-
-                    for( var i = 0; i < room.lights.length; i++ ) {
-                        images[i+1] = "img_light_" + room.lights[i].id;
-                        slids[i]    = "bri_" + room.lights[i].id;
-                    }
-
-                    // reset brightness sliders
-                    for(let i=0; i < slids.length; i++ ) {
-                        let slid = document.getElementById(slids[i]);
-                        if( slid ) {
-                            slid.disabled = !state;
-                            slid.value    = room.lights[i].bri;
-                        }
-                    }
-
-                    // reset images
-                    for( let i=0; i < images.length; i++ ){
-                        let img = document.getElementById(images[i]);
-                        if( img ) {
-                            var imgName;
-                            if( state ) {
-                                imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png"
-                            }
-                            else {
-                                imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png"
-                            }
-                            img.src = imgName;
-                            console.log("Image for " + img.id + " set to " + imgName);
-                        }
-                    }
-
-                },
-                function(xhr){
-                    console.log(xhr.status, xhr.statusText);
-                }
-            )
-        }        
-    }
-
-    function changeLightBrightness(lightId, bri) {
-        if( bri ) {
-            console.log("changeLightBrightness(" + lightId + ", " + bri + ")");
-            let light = findLightById(lightId);
-            if( light ){
-                light.bri = bri;
-                updateLightState(light);
-            }
-        }
-    }
-
-    function toggleLightOnOff(lightId) {
-        console.log("toggleLightOnOff(" + lightId + ")");
-        let light = findLightById(lightId);
-        if( light ){
-            light.on = !light.on;
-            updateLightState(light);
-        }
-    }
-
-    function updateLightState(light) {
-        if( light ){
-            console.log("updateLightState(" + light.id + ", " + light.on + ", " + light.bri + ")");
-            $.ajax({
-                url: "/api/lights/toggle",
-                method: "GET",
-                headers: {
-                    "Content-Type": "text/plain"                    
-                },
-                data: {
-                    "id": light.id,
-                    "on": light.on,
-                    "bri": light.bri
-                }
-            }).then(
-                function(response){
-                    console.log("Light = " + light );
-                    let lightId = light.id;
-                    let img = document.getElementById("img_light_"+lightId);
-                    let slid = document.getElementById("bri_" + lightId);
-                    let div = document.getElementById("state_" + lightId);
-                    if( img ) {
-                        var imgName;
-                        $( "#div_light_" + lightId ).removeClass("bg-white fg-black fg-white bg-black");
-                        if( light.on ) {
-                            var percent = (light.bri/254)*100;
-                            div.textContent = percent.toFixed() + " %";
-                            imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png"       
-                            $( "#div_light_" + lightId ).addClass("bg-white fg-black");                     
-                        }
-                        else {
-                            div.textContent = "Off";
-                            imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png"
-                            $( "#div_light_" + lightId ).addClass("fg-white bg-black");
-                        }
-                        img.src = imgName;
-                        slid.disabled=!light.on;
-                        slid.value = light.bri;
-                        console.log("Image for " + img.id + " set to " + imgName);
-                    }
-                },
-                function(xhr){
-                    console.log(xhr.status, xhr.statusText);
-                }
-            )
-        }        
-    }
 
 {#if state is 'sensors'}
-
 
 var sensors = [
     {#for sensor in sensors}
@@ -279,85 +131,7 @@ var sensors = [
         
     },
     {/for}
-]
+];
 
-    function updateSensorDetails(id) {
-        console.log("updateSensor called with id = '" + id + "'");
-        let sensor;
-        for(let i = 0; i < sensors.length; i++ ){
-            if( sensors[i].id == id) {
-                sensor = sensors[i];
-                console.log("found sensor: " + sensor);
-
-                // update form elements
-                document.getElementById("sensor_name").value = sensor.name;
-                document.getElementById("sensor_type").value = sensor.type;
-                document.getElementById("sensor_id").value = sensor.id;
-                document.getElementById("sensor_product").value = sensor.productname;
-                document.getElementById("sensor_fav").checked = sensor.isFavorite;
-                break;
-            }
-        }
-    }
-
-    function clearSensorForm() {
-        console.log("clearSensorForm()");
-        // update form elements
-        document.getElementById("sensor_name").value = '';
-        document.getElementById("sensor_type").value = '';
-        document.getElementById("sensor_id").value = '';
-        document.getElementById("sensor_product").value = '';
-        document.getElementById("sensor_fav").checked = false;
-
-    }
-
-    function saveSensorForm() {
-        let sensor;
-        let id = document.getElementById("sensor_id").value;
-        if( !id ) {
-            console.log("nothing selected to save");
-        }
-        for(let i = 0; i < sensors.length; i++ ){
-            if( sensors[i].id == id) {
-                sensor = sensors[i];
-                console.log("found sensor: " + sensor);
-
-                // update form elements
-                sensor.name = document.getElementById("sensor_name").value;
-                sensor.isFavorite = document.getElementById("sensor_fav").checked;
-
-                $.ajaxSetup({
-                    contentType: 'application/json',
-                    processData: false
-                });
-
-                $.ajaxPrefilter(function(options, originalOptions, jqXHR){
-                    if( options.data){
-                        options.data=JSON.stringify(options.data);
-                    }
-                });
-
-                $.ajax({
-                    url: "/api/sensors/" + id,
-                    method: "PUT",
-                    data: {
-                        newName: sensor.name,
-                        isFavorite: sensor.isFavorite
-                    }
-                }).then(
-                    function(response){
-                        console.log("Sensor " + id + " updated on server" );
-                        window.location.reload(true);
-                        clearSensorForm();
-                    },
-                    function(xhr){
-                        console.log(xhr.status, xhr.statusText);
-                    }
-                );
-
-                break;
-            }
-        }
-    }
 {/if}
-</script>
+
