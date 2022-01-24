@@ -1,6 +1,8 @@
 package org.wanja.hue.remote;
 
-public class State {
+import java.text.NumberFormat;
+
+public class LightState {
     public String alert;
     public String mode;
     public Boolean reachable;
@@ -30,6 +32,17 @@ public class State {
                 return true;
         }
         return false;
+    }
+
+    public float brightnessPercent() {
+        return (((float)bri/254)*100);
+    }
+
+    public String brightnessPercentString() {
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(0);
+        nf.setMinimumFractionDigits(0);
+        return nf.format(brightnessPercent());
     }
 
     @Override

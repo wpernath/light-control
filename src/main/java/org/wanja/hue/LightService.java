@@ -13,7 +13,7 @@ import org.wanja.hue.remote.HueLightsService;
 import org.wanja.hue.remote.Light;
 import org.wanja.hue.remote.Room;
 import org.wanja.hue.remote.Sensor;
-import org.wanja.hue.remote.State;
+import org.wanja.hue.remote.LightState;
 import org.wanja.hue.remote.StateResponse;
 
 
@@ -58,7 +58,7 @@ public class LightService {
      * @param state State to provide
      * @return new state
      */
-    public StateResponse[] setLightState(HueLightsService hueService, String id, State state) {
+    public StateResponse[] setLightState(HueLightsService hueService, String id, LightState state) {
         return hueService.setLightState(id, state);
     }
 

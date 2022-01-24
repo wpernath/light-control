@@ -187,8 +187,10 @@
         }        
     }
 
-    function toggleLightState(lightId, state, bri, onlyLight) {
+    function toggleLightState(lightId, bri, onlyLight) {
         var light;
+        var state;
+
         for( var i = 0; i < allLights.length; i++ ) {
             if( allLights[i].id == lightId ){
                 light = allLights[i];
@@ -219,17 +221,22 @@
 
                     let img = document.getElementById("img_light_"+lightId);
                     let slid = document.getElementById("bri_" + lightId);
+                    let div = document.getElementById("state_" + lightId);
                     if( img ) {
                         var imgName;
                         if( state ) {
+                            var percent = (light.bri/254)*100;
+                            div.textContent = percent.toFixed() + " %";
                             imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png"                            
                         }
                         else {
+                            div.textContent = "Off";
                             imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png"
                         }
                         img.src = imgName;
-                        slid.disabled=!state;
-                        slid.value = light.bri;
+                        //slid.disabled=!state;
+                        //slid.value = light.bri;
+                        $( "#div_light_" + lightId ).toggleClass("bg-white fg-black fg-white fg-black");
                         console.log("Image for " + img.id + " set to " + imgName);
                     }
 

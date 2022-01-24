@@ -16,7 +16,9 @@ public class SensorState  {
 
     public String printableTemperature() {
         NumberFormat nf = NumberFormat.getNumberInstance();
-        String celsius = nf.format(realTemperature());
+        nf.setMaximumFractionDigits(1);
+        nf.setMinimumFractionDigits(1);
+        String celsius = nf. format(realTemperature());
         return celsius;
 
     }
