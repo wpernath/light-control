@@ -1,4 +1,9 @@
 
+    /**
+     * 
+     * @param {long} lightId 
+     * @returns light or null
+     */
     function findLightById(lightId) {
         for( var i=0; i < allLights.length; i++ ){
             if( allLights[i].id == lightId) {
@@ -8,6 +13,11 @@
         return null;
     }
 
+    /**
+     * 
+     * @param {long} roomId 
+     * @returns 
+     */
     function findRoomById(roomId) {
         for(var i=0; i < rooms.length; i++) {
             if( rooms[i].id == roomId) {
@@ -18,6 +28,11 @@
     }
 
 
+    /**
+     * 
+     * @param {long} roomId 
+     * @returns 
+     */
     function roomHasLittenBulbs(roomId) {
         var room = findRoomById(roomId);
         if( room ) {
@@ -29,6 +44,10 @@
         return false;
     }
 
+    /**
+     * 
+     * @param {long} roomId 
+     */
     function toggleRoom(roomId) {
         let room = findRoomById(roomId);
         let state;
@@ -75,10 +94,20 @@
 
     }
 
+    /**
+     * 
+     * @param {long} lightId 
+     * @param {int} sat 
+     */
     function changeLightSaturation(lightId, sat) {
 
     }
 
+    /**
+     * 
+     * @param {long} lightId 
+     * @param {int} bri 
+     */
     function changeLightBrightness(lightId, bri) {
         if( bri ) {
             console.log("changeLightBrightness(" + lightId + ", " + bri + ")");
@@ -90,7 +119,10 @@
         }
     }
 
-    /** Changes the light on/off state */
+    /** 
+     * Changes the light on/off state 
+     * 
+     */ 
     function toggleLightOnOff(lightId) {
         console.log("toggleLightOnOff(" + lightId + ")");
         let light = findLightById(lightId);
@@ -100,7 +132,8 @@
         }
     }
 
-    /* This function is calling the server to update the light on the hue bridges 
+    /**
+     * This function is calling the server to update the light on the hue bridges 
      */
     function updateLightState(light) {
         if( light ){
@@ -155,7 +188,8 @@
 
     }
 
-    /** This function is being called by the room event handler and on light click
+    /** 
+     * This function is being called by the room event handler and on light click
      * It updates all the controls for a light.
      */
     function updateLightControls(light) {
@@ -169,23 +203,29 @@
             $( "#div_light_" + lightId ).removeClass("bg-white fg-black fg-white bg-black");
             if( light.on ) {
                 var percent = (light.bri/254)*100;
-                div.textContent = percent.toFixed() + " %";
+                if( div ) div.textContent = percent.toFixed() + " %";
                 imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png";       
                 $( "#div_light_" + lightId ).addClass("bg-white fg-black");                     
             }
             else {
-                div.textContent = "Off";
+                if( div ) div.textContent = "Off";
                 imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png";
                 $( "#div_light_" + lightId ).addClass("fg-white bg-black");
             }
             img.src = imgName;
-            slid.disabled=!light.on;
-            slid.value = light.bri;
+
+            if( slid ) {
+                slid.disabled=!light.on;
+                slid.value = light.bri;
+            }
         }
     }
 
 
-
+    /**
+     * updates the details of a sensor (right now only the name)
+     * @param {Long} id 
+     */
     function updateSensorDetails(id) {
         console.log("updateSensor called with id = '" + id + "'");
         let sensor;
@@ -205,6 +245,9 @@
         }
     }
 
+    /**
+     * 
+     */
     function clearSensorForm() {
         console.log("clearSensorForm()");
         // update form elements
@@ -216,6 +259,9 @@
 
     }
 
+    /**
+     * 
+     */
     function saveSensorForm() {
         let sensor;
         let id = document.getElementById("sensor_id").value;

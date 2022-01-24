@@ -13,7 +13,7 @@
                     {#for room in rooms}
                         {#for light in room.allLights } 
                             <a id="light_{light.id}" data-role="tile" data-size="medium" data-effect="hover-zoom-right" class="bg-white"  
-                            onclick="toggleLightState({light.id}, {light.state.on ? false : true}, {light.state.bri}, true); " 
+                            onclick="toggleLightOnOff({light.id}); " 
                             >
                                 <div class="slide-front">
                                     {#if light.state.on }
