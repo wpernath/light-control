@@ -27,7 +27,7 @@
 
         {#for light in selectedRoom.allLights}
         <div class="row">
-        <a href="#" onclick="toggleLightState({light.id}, {light.state.bri}, true);" >
+        <a href="#" onclick="toggleLightOnOff({light.id});" >
         <div id="div_light_{light.id}" class="mt-2 border border-size-1 bd-cyan border-radius-4 {#if light.state.on }bg-white fg-black{#else}fg-white bg-black{/if}" style="width: 120px; height: 120px; opacity: 1" >
             <div class="m2">
                 <div class="pl-2 pt-2">
@@ -58,7 +58,7 @@
             data-cls-hint="bg-cyan custom-marker shadow-2" data-cls-complete="bg-red" data-cls-buffer="bg-yellow" 
             {#if !light.state.on } disabled {/if}
             data-size="120"
-            data-on-change="toggleLightState({light.id}, this.value, false);">
+            data-on-change="changeLightBrightness({light.id}, this.value);">
         </div>
         {/for}
 

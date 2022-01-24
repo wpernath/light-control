@@ -100,6 +100,15 @@
         }
     }
     
+    function findLightById(lightId) {
+        for( var i=0; i < allLights.length; i++ ){
+            if( allLights[i].id == lightId) {
+                return allLights[i];
+            }
+        }
+        return null;
+    }
+
     function findRoomById(roomId) {
         for(var i=0; i < rooms.length; i++) {
             if( rooms[i].id == roomId) {
@@ -187,23 +196,29 @@
         }        
     }
 
-    function toggleLightState(lightId, bri, onlyLight) {
-        var light;
-        var state;
-
-        for( var i = 0; i < allLights.length; i++ ) {
-            if( allLights[i].id == lightId ){
-                light = allLights[i];
-                if( onlyLight ) {                    
-                    light.on = !allLights[i].on;
-                }
-                light.bri = bri;                    
-                state = light.on;
-                break;
+    function changeLightBrightness(lightId, bri) {
+        if( bri ) {
+            console.log("changeLightBrightness(" + lightId + ", " + bri + ")");
+            let light = findLightById(lightId);
+            if( light ){
+                light.bri = bri;
+                updateLightState(light);
             }
         }
-        
+    }
+
+    function toggleLightOnOff(lightId) {
+        console.log("toggleLightOnOff(" + lightId + ")");
+        let light = findLightById(lightId);
         if( light ){
+            light.on = !light.on;
+            updateLightState(light);
+        }
+    }
+
+    function updateLightState(light) {
+        if( light ){
+            console.log("updateLightState(" + light.id + ", " + light.on + ", " + light.bri + ")");
             $.ajax({
                 url: "/api/lights/toggle",
                 method: "GET",
@@ -211,35 +226,36 @@
                     "Content-Type": "text/plain"                    
                 },
                 data: {
-                    "id": lightId,
+                    "id": light.id,
                     "on": light.on,
-                    "bri": bri
+                    "bri": light.bri
                 }
             }).then(
                 function(response){
-                    console.log("Light = {" + lightId + ", " + state + ", " + bri + "};" );
-
+                    console.log("Light = " + light );
+                    let lightId = light.id;
                     let img = document.getElementById("img_light_"+lightId);
                     let slid = document.getElementById("bri_" + lightId);
                     let div = document.getElementById("state_" + lightId);
                     if( img ) {
                         var imgName;
-                        if( state ) {
+                        $( "#div_light_" + lightId ).removeClass("bg-white fg-black fg-white bg-black");
+                        if( light.on ) {
                             var percent = (light.bri/254)*100;
                             div.textContent = percent.toFixed() + " %";
-                            imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png"                            
+                            imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png"       
+                            $( "#div_light_" + lightId ).addClass("bg-white fg-black");                     
                         }
                         else {
                             div.textContent = "Off";
                             imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png"
+                            $( "#div_light_" + lightId ).addClass("fg-white bg-black");
                         }
                         img.src = imgName;
-                        //slid.disabled=!state;
-                        //slid.value = light.bri;
-                        $( "#div_light_" + lightId ).toggleClass("bg-white fg-black fg-white fg-black");
+                        slid.disabled=!light.on;
+                        slid.value = light.bri;
                         console.log("Image for " + img.id + " set to " + imgName);
                     }
-
                 },
                 function(xhr){
                     console.log(xhr.status, xhr.statusText);
