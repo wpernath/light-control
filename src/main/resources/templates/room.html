@@ -1,105 +1,102 @@
-<div class="m-2">
-    <div data-role="gradient-box" data-gradient-position="40px 40px" data-gradient-size="farthest-corner" data-gradient-type="radial" class="fg-white p-6 ">
-        <div class="grid">
-            <div class="row">
-                <div class="cell-12">
-                    <h2>{selectedRoom.name}</h2>
-                </div>
-            </div>
-
-            <!-- rounded info boxes with lights and Temp -->
-            <div class="row pr-2 flex-justify-center">
-                <div class="cell">
-                    <a href="#" onclick="toggleRoom({selectedRoom.id});">
-                    <div id="room_{selectedRoom.id}" class="border bd-darkCyan border-size-2 border-double border-radius-half  bg-white fg-black bg-cobalt-hover bg-darkCobalt-active" style="width: 60px; height: 60px" >
-                        <div class="pt-1 pl-1">
-                            <img id="img_room_{selectedRoom.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png" class="icon h-48 w-48" />
-                        </div>
-                    </div>
-                    </a>
-                    <div id="room_descr_{selectedRoom.id}" class="text-left text-secondary text-medium">&nbsp; </div>
-                </div>
-
-            {#for sensor in temperatureSensors}
-                <div class="cell" style="width: 80px">
-                    <div class="border bd-lightCyan border-size-2 border-double border-radius-half  bg-white fg-black bg-cobalt-hover" style="width: 60px; height: 60px">
-                        <div class="mt-4"    >
-                            <p class="text-center fg-black text-bold">{sensor.state.printableTemperature}°</p>
-                        </div>
-                    </div>
-                    <div class="text-left text-secondary text-medium">{sensor.name}</div>
-                </div>
-            {/for}
+<div data-role="gradient-box" data-gradient-position="40px 40px" data-gradient-size="farthest-corner" data-gradient-type="radial" class="fg-white p-6 ">
+    <div class="grid">
+        <div class="row">
+            <div class="cell-12">
+                <h2>{selectedRoom.name}</h2>
             </div>
         </div>
-    </div>
-</div>
-<div class="m-2 bg-darkGray">
 
-    <div data-role="gradient-box" data-gradient-position="40px 40px" data-gradient-size="farthest-corner"
-        data-gradient-type="radial" class="fg-white p-6">
-
-        <div class="grid" >
-
-            {#for light in selectedRoom.allLights}
-            <div class="row">
-                <div class="cell-4">
-                    <a href="#" onclick="toggleLightOnOff({light.id}); updateRoomControls(findRoomById({selectedRoom.id}));" >
-                        <div id="div_light_{light.id}" class="mt-2 border border-size-1 bd-lightCyan border-radius-4 {#if light.state.on }bg-white fg-black{#else}fg-white bg-black{/if} bg-cobalt-hover bg-darkCobalt-active" style="width: 120px; height: 120px; opacity: 1" >
-                            <div class="m2">
-                                <div class="pl-2 pt-2">
-                                    {#if light.state.on }
-                                    <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png" class="icon h-48 w-48" />
-                                    {#else}
-                                    <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-off.png" class="icon h-48 w-48" />
-                                    {/if}
-                                </div>
-                                <div class="pl-2 pt-2">
-                                    <span class="text-left text-secondary text-bold">
-                                        <p class="text-ellipsis">{light.name}</p>
-                                    </span>
-                                </div>
-                                <div class="pl-2">
-                                    <span id="state_{light.id}" class="text-left text-secondary text-medium">
-                                        {#if light.state.on}{light.state.brightnessPercentString} %{#else}Off{/if}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+        <!-- rounded info boxes with lights and Temp -->
+        <div class="row pr-2 flex-justify-center">
+            <div class="cell">
+                <a href="#" onclick="toggleRoom({selectedRoom.id});">
+                <div id="room_{selectedRoom.id}" class="border bd-darkCyan border-size-2 border-double border-radius-half  bg-white fg-black bg-cobalt-hover bg-darkCobalt-active" style="width: 60px; height: 60px" >
+                    <div class="pt-1 pl-1">
+                        <img id="img_room_{selectedRoom.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png" class="icon h-48 w-48" />
+                    </div>
                 </div>
-                <div class="cell-2">
-                    <input id="bri_{light.id}" data-role="slider" data-vertical="true" class="cycle-marker" data-min="0" data-max="254" data-show-min-max="false"
-                        data-value="{light.state.bri}" data-hint="true" data-hint-always="false" data-hint-position="bottom"
-                        data-hint-mask="Brightness: $1" data-cls-backside="bg-dark" data-cls-marker="bg-blue border-50 custom-marker"
-                        data-cls-hint="bg-cyan custom-marker shadow-2" data-cls-complete="bg-red" data-cls-buffer="bg-yellow" 
-                        {#if !light.state.on } disabled {/if}
-                        data-size="120"
-                        data-on-change="changeLightBrightness({light.id}, this.value);" />
-                </div>
+                </a>
+                <div id="room_descr_{selectedRoom.id}" class="text-left text-secondary text-medium">&nbsp; </div>
+            </div>
 
-                <div class="cell-2">
-                    <input id="hue_{light.id}" data-role="slider" data-vertical="true" class="cycle-marker" data-min="0" data-max="254"
-                        data-show-min-max="false" data-value="{light.state.hue}" data-hint="true" data-hint-always="false"
-                        data-hint-position="bottom" data-hint-mask="Hue: $1" data-cls-backside="bg-dark"
-                        data-cls-marker="bg-blue border-50 custom-marker" data-cls-hint="bg-cyan custom-marker shadow-2"
-                        data-cls-complete="bg-red" data-cls-buffer="bg-yellow" disabled data-size="120"
-                        data-on-change="changeLightHue({light.id}, this.value);" />
+        {#for sensor in temperatureSensors}
+            <div class="cell" style="width: 80px">
+                <div class="border bd-lightCyan border-size-2 border-double border-radius-half  bg-white fg-black bg-cobalt-hover" style="width: 60px; height: 60px">
+                    <div class="mt-4"    >
+                        <p class="text-center fg-black text-bold">{sensor.state.printableTemperature}°</p>
+                    </div>
                 </div>
-
-                <div class="cell-2">
-                    <input id="sat_{light.id}" data-role="slider" data-vertical="true" class="cycle-marker" data-min="0" data-max="254"
-                        data-show-min-max="false" data-value="{light.state.sat}" data-hint="true" data-hint-always="false"
-                        data-hint-position="bottom" data-hint-mask="Hue: $1" data-cls-backside="bg-dark"
-                        data-cls-marker="bg-blue border-50 custom-marker" data-cls-hint="bg-cyan custom-marker shadow-2"
-                        data-cls-complete="bg-red" data-cls-buffer="bg-yellow" disabled  data-size="120"
-                        data-on-change="changeLightSaturation({light.id}, this.value);" />
-                </div>
-
+                <div class="text-left text-secondary text-medium">{sensor.name}</div>
             </div>
         {/for}
         </div>
     </div>
+    <div class="mt-8">
+        <span class="text-left text-bold fg-white"><h4>Lights</h4></span>
+    </div>
+
+
+    <div class="grid" >
+
+        {#for light in selectedRoom.allLights}
+        <div class="row">
+            <div class="cell-4">
+                <a href="#" onclick="toggleLightOnOff({light.id}); updateRoomControls(findRoomById({selectedRoom.id}));" >
+                    <div id="div_light_{light.id}" class="mt-2 border border-size-1 bd-lightCyan border-radius-4 {#if light.state.on }bg-white fg-black{#else}fg-white bg-black{/if} bg-cobalt-hover bg-darkCobalt-active" style="width: 120px; height: 120px; opacity: 1" >
+                        <div class="m2">
+                            <div class="pl-2 pt-2">
+                                {#if light.state.on }
+                                <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-on.png" class="icon h-48 w-48" />
+                                {#else}
+                                <img id="img_light_{light.id}" src="https://img.icons8.com/color-glass/48/000000/light-off.png" class="icon h-48 w-48" />
+                                {/if}
+                            </div>
+                            <div class="pl-2 pt-2">
+                                <span class="text-left text-secondary text-bold">
+                                    <p class="text-ellipsis">{light.name}</p>
+                                </span>
+                            </div>
+                            <div class="pl-2">
+                                <span id="state_{light.id}" class="text-left text-secondary text-medium">
+                                    {#if light.state.on}{light.state.brightnessPercentString} %{#else}Off{/if}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="cell-2">
+                <input id="bri_{light.id}" data-role="slider" data-vertical="true" class="cycle-marker" data-min="0" data-max="254" data-show-min-max="false"
+                    data-value="{light.state.bri}" data-hint="true" data-hint-always="false" data-hint-position="bottom"
+                    data-hint-mask="Brightness: $1" data-cls-backside="bg-dark" data-cls-marker="bg-blue border-50 custom-marker"
+                    data-cls-hint="bg-cyan custom-marker shadow-2" data-cls-complete="bg-red" data-cls-buffer="bg-yellow" 
+                    {#if !light.state.on } disabled {/if}
+                    data-size="120"
+                    data-on-change="changeLightBrightness({light.id}, this.value);" />
+            </div>
+
+            <div class="cell-2">
+                <input id="hue_{light.id}" data-role="slider" data-vertical="true" class="cycle-marker" data-min="0" data-max="254"
+                    data-show-min-max="false" data-value="{light.state.hue}" data-hint="true" data-hint-always="false"
+                    data-hint-position="bottom" data-hint-mask="Hue: $1" data-cls-backside="bg-dark"
+                    data-cls-marker="bg-blue border-50 custom-marker" data-cls-hint="bg-cyan custom-marker shadow-2"
+                    data-cls-complete="bg-red" data-cls-buffer="bg-yellow" disabled data-size="120"
+                    data-on-change="changeLightHue({light.id}, this.value);" />
+            </div>
+
+            <div class="cell-2">
+                <input id="sat_{light.id}" data-role="slider" data-vertical="true" class="cycle-marker" data-min="0" data-max="254"
+                    data-show-min-max="false" data-value="{light.state.sat}" data-hint="true" data-hint-always="false"
+                    data-hint-position="bottom" data-hint-mask="Hue: $1" data-cls-backside="bg-dark"
+                    data-cls-marker="bg-blue border-50 custom-marker" data-cls-hint="bg-cyan custom-marker shadow-2"
+                    data-cls-complete="bg-red" data-cls-buffer="bg-yellow" disabled  data-size="120"
+                    data-on-change="changeLightSaturation({light.id}, this.value);" />
+            </div>
+
+        </div>
+    {/for}
+    </div>
 </div>
+
 
 
