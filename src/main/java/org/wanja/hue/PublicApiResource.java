@@ -33,7 +33,7 @@ import org.wanja.hue.remote.Light;
 import org.wanja.hue.remote.Room;
 import org.wanja.hue.remote.Sensor;
 import org.wanja.hue.remote.SensorConfig;
-import org.wanja.hue.remote.State;
+import org.wanja.hue.remote.LightState;
 
 import io.quarkus.panache.common.Sort;
 import io.quarkus.logging.Log;
@@ -285,7 +285,7 @@ public class PublicApiResource {
 
     @PUT
     @Path("/lights/q")
-    public void setLightStateById(@QueryParam("id") String lightId, State state) throws Exception {
+    public void setLightStateById(@QueryParam("id") String lightId, LightState state) throws Exception {
         Light light = Light.findById(Long.parseLong(lightId));
         if( light == null ) throw new WebApplicationException("No Light with id " + lightId + " found!");
         Room room = Room.findById(light.roomId);
@@ -306,7 +306,7 @@ public class PublicApiResource {
         Bridge bridge = room.bridge;
         HueLightsService service = hueServiceByBridge(bridge);
 
-        State state = new State();
+        LightState state = new LightState();
         state.on = on;
         state.bri = bri;
         lightService.setLightState(service, light.number, state);
