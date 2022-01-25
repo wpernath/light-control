@@ -3,12 +3,14 @@ package org.wanja.hue.remote;
 import java.util.Collections;
 import java.util.List;
 
+import javax.json.bind.annotation.JsonbProperty;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.logging.Log;
 
 @Entity
 public class Room extends PanacheEntity {
@@ -20,6 +22,9 @@ public class Room extends PanacheEntity {
     public String type;
     public Boolean recycle;
 
+    @JsonbProperty(value = "class")
+    public String clazz;
+
     @Transient
     public Action action;
 
@@ -28,6 +33,43 @@ public class Room extends PanacheEntity {
 
     @OneToMany(mappedBy = "roomId" )
     public List<Light> allLights = Collections.emptyList();
+
+
+    public String convertClassToImage() {
+        String image = "roomsOther.svg";
+        if( clazz != null ) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("rooms");
+
+            // check some special classes, which don't have a corresponding image
+            if( clazz.equalsIgnoreCase("Garden")) sb.append("Terrace");
+            else if( clazz.contains(" ") ) {
+                if( clazz.endsWith(" room")) {
+                    if( clazz.contains("Guest room")) {
+                        image = "Guestroom";
+                    }
+                    else {
+                        image = clazz.substring(0, clazz.indexOf(" room"));
+                    }
+                }
+                else {
+                    // it is something like "Front door". Just kill the space
+                    StringBuilder t = new StringBuilder();
+                    t.append(clazz.substring(0, clazz.indexOf(" ")));
+                    t.append(clazz.substring(clazz.indexOf(" ")+1));
+                    image = t.toString();
+                }
+                sb.append(image);
+            }
+            else {
+                sb.append(clazz);
+            }
+            sb.append(".svg");
+            image = sb.toString();
+        }
+        Log.debugf("convertClassToImage() returns %s", image);
+        return image;
+    }
 
     @Override
     public int hashCode() {

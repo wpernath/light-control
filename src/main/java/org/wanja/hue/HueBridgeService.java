@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Singleton;
+import javax.enterprise.context.ApplicationScoped;
 
 import org.wanja.hue.remote.Action;
 import org.wanja.hue.remote.Bridge;
@@ -17,8 +17,8 @@ import org.wanja.hue.remote.LightState;
 import org.wanja.hue.remote.StateResponse;
 
 
-@Singleton
-public class LightService {
+@ApplicationScoped
+public class HueBridgeService {
     
 
     /**

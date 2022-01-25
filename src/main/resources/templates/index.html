@@ -11,12 +11,27 @@
     <link rel="stylesheet" href="/index.css">
 
     <script src="/logic.js"></script>
-    
+    <script src="/svg-injector.js"></script>
+
     <script>
     {#include javascript /}
     </script>
 
-    
+    <style>
+        #nav-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        #room-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        g {
+            fill: #ffffff;
+        }
+    </style>
 </head>
 
 <body class="m4-cloak h-vh-100">
@@ -65,7 +80,9 @@
                 {#for room in rooms}
                 <li>
                     <a href="/ui/room?room={room.name}"  > 
-                        <span class="icon"><span class="mif-room"></span></span>                        
+                        <span class="icon">
+                            <img id="nav-icon" class="inject-me" src="/images/{room.convertClassToImage}" />
+                        </span>                        
                         <span class="caption">
                             {#if state is 'room' && selectedRoom.name is room.name}
                             <b> > {room.name}</b>
@@ -84,6 +101,32 @@
         <div class="navview-content h-100" >
             <div data-role="appbar" class="pos-absolute bg-darkCyan fg-white">
                 <a href="#" class="app-bar-item d-block d-none-lg" id="paneToggle"><span class="mif-menu"></span></a>
+
+                <div class="app-bar-container ml-auto">
+                    <div class="app-bar-container">
+                        <a href="#" class="app-bar-item">
+                            <span class="mif-cogs"></span>                        
+                        </a>
+
+                        <div class="user-block shadow-1" data-role="collapse" data-collapsed="true">
+                            <div class="bg-darkCyan fg-white p-2 text-center">
+                                
+                                <div class="h4 mb-0"><span class="mif-cogs"></span>&nbsp;Settings</div>
+                                <div class="bg-white d-flex flex-justify-between flex-equal-items p-2 bg-light">
+                                    <button class="button mr-1" onclick="createDatabase();">Create Database</button>                                    
+                                </div>
+                                <div class="bg-white d-flex flex-justify-between flex-equal-items p-2 bg-light">
+                                    <button class="button mr-1" onclick="deleteDatabase();">Delete Database</button>
+                                </div>
+                                <div class="bg-white d-flex flex-justify-between flex-equal-items p-2 bg-light">
+                                    <button class="button mr-1" onclick="updateDatabase();">Update Database</button>
+                                </div>
+                                <hr />
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Content here will be replaced by click on navview item -->
@@ -115,6 +158,28 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
+
+    <script>
+        // Elements to inject
+            var mySVGsToInject = document.querySelectorAll('img.inject-me');
+
+            // Options
+            var injectorOptions = {
+                evalScripts: 'once',
+                pngFallback: 'assets/png',
+                each: function (svg) {
+                    // Callback after each SVG is injected
+                    if (svg) console.log('SVG injected: ' + svg.getAttribute('id'));
+                }
+            };
+
+            // Trigger the injection
+            SVGInjector(mySVGsToInject, injectorOptions, function (totalSVGsInjected) {
+                // Callback after all SVGs are injected
+                console.log('We injected ' + totalSVGsInjected + ' SVG(s)!');
+            });
+
+    </script>
 </body>
 
 </html>

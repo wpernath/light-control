@@ -1,6 +1,7 @@
 package org.wanja.hue.remote;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
@@ -25,6 +26,9 @@ public class Light extends PanacheEntity {
 
     @Transient
     public LightState state = new LightState();
+
+    @OneToOne
+    public LightConfig config = new LightConfig();
 
     // The room number for Hue
     public String roomNumber;

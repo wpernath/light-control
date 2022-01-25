@@ -38,13 +38,16 @@ import org.wanja.hue.remote.LightState;
 import io.quarkus.panache.common.Sort;
 import io.quarkus.logging.Log;
 
+/**
+ * 
+ */
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/api")
 public class PublicApiResource {
 
     @Inject
-    LightService lightService;
+    HueBridgeService lightService;
 
     @Inject
     HueBridgeConfig bridgeConfig;
@@ -139,8 +142,7 @@ public class PublicApiResource {
 
         for( Bridge b : bridges) {
             Log.infof("Scanning Bridge %s",  b.name);
-            HueLightsService hueService;
-            hueService = hueServiceByBridge(b);
+            HueLightsService hueService = hueServiceByBridge(b);
 
             List<Room> rooms = lightService.getAllRooms(hueService, b);
 
@@ -153,6 +155,7 @@ public class PublicApiResource {
                     lightNum++;
                     Log.infof("Creating Light %s in Room %s", l.name, r.name);
                     l.roomId = r.id;
+                    l.config.persist();
                     l.persist();
                 }
             }
@@ -238,6 +241,19 @@ public class PublicApiResource {
         Log.infof("Getting a list of all Rooms");
         List<Room> rooms = Room.findAll(Sort.by("name").ascending()).list();
         Log.infof("  Got %d rooms", rooms.size());
+        return rooms;
+    }
+
+    @GET
+    @Path("/rooms/classes")
+    public List<Room> allClasses() {
+        List<Room> rooms = allRooms();
+        for( Room r : rooms ){
+            r.action = null;
+            r.bridge = null;
+            r.allLights = null;
+            r.lights = null;
+        }
         return rooms;
     }
 

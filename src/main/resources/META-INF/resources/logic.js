@@ -322,3 +322,38 @@
         }
     }
 
+
+    function updateDatabase() {
+
+    }
+
+    function deleteDatabase() {
+        $.ajax({
+            url: "/api/bridge/init",
+            method: "DELETE",
+        }).then(
+            function(response){
+                console.log("Database deleted" );
+                window.location.reload(true);
+            },
+            function(xhr){
+                console.log(xhr.status, xhr.statusText);
+            }
+        );
+    }
+
+    function createDatabase() {
+        $.ajax({
+            url: "/api/bridge/init",
+            method: "POST",
+        }).then(
+            function(response){
+                console.log("Database filled" );
+                window.location.reload(true);
+            },
+            function(xhr){
+                console.log(xhr.status, xhr.statusText);
+            }
+        );
+
+    }

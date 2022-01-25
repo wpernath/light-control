@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" class=" scrollbar-type-1 sb-cyan">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <script src="svg-injector.js"></script>
+
+    <style>
+        #thumb-icon {
+            width: 150px;
+            height: 150px;
+        }
+        g {
+            fill: #aaaaaa;
+        }
+    </style>
+</head>
+
+<body>
+    <img id="thumb-icon" class="inject-me" src="images/roomsOffice.svg" >
+
+    <img id="thumb-icon" class="inject-me" src="images/roomsLiving.svg">
+
+    <img id="thumb-icon" class="inject-me" src="images/roomsAttic.svg">
+
+    <img id="thumb-icon" class="inject-me" src="images/roomsLiving.svg">
+    <script>
+
+        // Elements to inject
+        var mySVGsToInject = document.querySelectorAll('img.inject-me');
+
+        // Options
+        var injectorOptions = {
+            evalScripts: 'once',
+            pngFallback: 'assets/png',
+            each: function (svg) {
+                // Callback after each SVG is injected
+                if (svg) console.log('SVG injected: ' + svg.getAttribute('id'));
+            }
+        };
+
+        // Trigger the injection
+        SVGInjector(mySVGsToInject, injectorOptions, function (totalSVGsInjected) {
+            // Callback after all SVGs are injected
+            console.log('We injected ' + totalSVGsInjected + ' SVG(s)!');
+        });
+    </script>
+</body>
+</html>
