@@ -1,7 +1,6 @@
 package org.wanja.hue;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -20,7 +19,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
-import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.RestClientDefinitionException;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
@@ -149,10 +147,12 @@ public class PublicApiResource {
                 Log.infof("Creating Room %s on Bridge %s", r.name, b.name);
                 r.bridge = b;
                 r.persist();
+
                 for (Light l : r.allLights) {
                     lightNum++;
                     Log.infof("Creating Light %s in Room %s", l.name, r.name);
                     l.roomId = r.id;
+                    l.bridgeId = b.id;
                     l.config.persist();
                     l.persist();
                 }
@@ -341,6 +341,26 @@ public class PublicApiResource {
         state.on = on;
         state.bri = bri;
         lightService.setRoomScene(service, room.number, state);
+    }
+
+
+    @GET
+    @Path("/lights/all")
+    public List<Light> retrieveAllLights() throws IllegalStateException, RestClientDefinitionException, MalformedURLException {
+        List<Light> lights = Light.findAll().list();
+        Map<Long, Bridge> bridgeMap = new HashMap<>();
+
+        for( Light l : lights ) {
+            // find bridge to ask
+            Bridge b = bridgeMap.get(l.bridgeId);
+            if( b == null ) {
+                b = Bridge.findById(l.bridgeId);
+                bridgeMap.put(l.bridgeId, b);
+            }
+            Light newLight = hueServiceByBridge(b).getLightById(l.id.toString());
+            l.state = newLight.state;
+        }
+        return lights;
     }
 
 

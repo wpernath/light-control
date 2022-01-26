@@ -13,11 +13,11 @@ import org.eclipse.microprofile.rest.client.RestClientDefinitionException;
 
 import io.quarkus.logging.Log;
 
-
 public class CachedHueBridgeService implements HueLightsService {
     Bridge bridge;
     HueLightsService service;
     
+
     LoadingCache<String, Light> lightCache;
     LoadingCache<String, Room>  roomCache;
     LoadingCache<Long, Sensor> sensorCache;
@@ -32,19 +32,19 @@ public class CachedHueBridgeService implements HueLightsService {
 
         // create Caches
         lightCache = Caffeine.newBuilder()
-                .expireAfterWrite(1, TimeUnit.MINUTES)
+                .expireAfterWrite(2, TimeUnit.MINUTES)
                 //.weakKeys()
                 //.weakValues()
                 .build(k -> service.getLightById(k));
 
         sensorCache = Caffeine.newBuilder()
-                .expireAfterWrite(30, TimeUnit.MINUTES)
+                .expireAfterWrite(60, TimeUnit.MINUTES)
                 //.weakKeys()
                 //.weakValues()
                 .build(k -> service.sensorById(k));
 
         roomCache   = Caffeine.newBuilder()
-                .expireAfterWrite(30, TimeUnit.MINUTES)
+                .expireAfterWrite(60, TimeUnit.MINUTES)
                 //.weakKeys()
                 //.weakValues()
                 .build(k -> service.getRoomById(k));
@@ -58,7 +58,7 @@ public class CachedHueBridgeService implements HueLightsService {
 
     @Override
     public Light getLightById(String id) {
-        Log.infof("Getting light %s of bridge %s", id, bridge.name);
+        Log.debugf("Getting light %s of bridge %s", id, bridge.name);
         return lightCache.get(id, k -> service.getLightById(k));
     }
 
@@ -114,6 +114,13 @@ public class CachedHueBridgeService implements HueLightsService {
         if( action.hue != null) r.action.hue = action.hue;
         if( action.sat != null ) r.action.sat = action.sat;
         service.setGroupAction(id, action);
+
+        // Don't forget to update the light states in our cache
+        for( String lid : r.lights ) {
+            Light l = getLightById(lid);
+            if (action.on != null)
+                l.state.on = action.on;
+        }
     }
 
     @Override

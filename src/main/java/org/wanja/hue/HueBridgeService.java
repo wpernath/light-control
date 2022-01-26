@@ -86,7 +86,7 @@ public class HueBridgeService {
                         Light light = hueService.getLightById(l);
                         light.number = l;
                         light.roomNumber = key;
-                        light.bridgeNumber = room.bridge.bridgeNumber;
+                        light.bridgeId = room.bridge.id;
                         room.allLights.add(light);
                     }
                 }

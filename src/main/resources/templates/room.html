@@ -76,7 +76,7 @@
                     data-cls-hint="bg-cyan custom-marker shadow-2" data-cls-complete="bg-red" data-cls-buffer="bg-yellow" 
                     {#if !light.state.on } disabled {/if}
                     data-size="120"
-                    data-on-change="changeLightBrightness({light.id}, this.value);" />
+                     />
             </div>
 
             <div class="cell-2">
@@ -85,7 +85,7 @@
                     data-hint-position="bottom" data-hint-mask="Hue: $1" data-cls-backside="bg-dark"
                     data-cls-marker="bg-blue border-50 custom-marker" data-cls-hint="bg-cyan custom-marker shadow-2"
                     data-cls-complete="bg-red" data-cls-buffer="bg-yellow" disabled data-size="120"
-                    data-on-change="changeLightHue({light.id}, this.value);" />
+                     />
             </div>
 
             <div class="cell-2">
@@ -94,13 +94,53 @@
                     data-hint-position="bottom" data-hint-mask="Hue: $1" data-cls-backside="bg-dark"
                     data-cls-marker="bg-blue border-50 custom-marker" data-cls-hint="bg-cyan custom-marker shadow-2"
                     data-cls-complete="bg-red" data-cls-buffer="bg-yellow" disabled  data-size="120"
-                    data-on-change="changeLightSaturation({light.id}, this.value);" />
+                     />
             </div>
 
         </div>
     {/for}
     </div>
 </div>
+
+<script>
+    window.onload = function() {
+        // update controls for this room
+        updateRoomControls(findRoomById({selectedRoom.id}));
+
+        //let events = new EventSource("/events");
+        //events.onmessage = function(event) {
+        //    let rooms = JSON.parse(event.data);
+
+        //    console.log("This is coming from the server: " + rooms[0].name);
+        //};
+
+        // add event listener for the controls which would 
+        // else fire already on page load
+        let bri;
+        let hue;
+        let sat;
+
+{#for light in selectedRoom.allLights}   
+        
+        // get elements for light {light.name}
+        bri = document.getElementById("bri_{light.id}");
+        hue = document.getElementById("hue_{light.id}");
+        sat = document.getElementById("sat_{light.id}");        
+
+        bri.onchange = function() {
+            changeLightBrightness('{light.id}', this.value);
+        }
+
+        hue.onchange = function () {
+            changeLightHue('{light.id}', this.value);
+        }
+
+        sat.onchange = function () {
+            changeLightSaturation('{light.id}', this.value);
+        }
+{/for}
+    }
+</script>
 
 
 

@@ -20,8 +20,8 @@ public class Light extends PanacheEntity {
     public String uniqueid;
 
     // next 3 properties are only used by the app and are not coming from HUE
-    public Long   roomId;
-    public String bridgeNumber;
+    public Long roomId;
+    public Long bridgeId;
     public Boolean isFavorite = true;
 
     @Transient
