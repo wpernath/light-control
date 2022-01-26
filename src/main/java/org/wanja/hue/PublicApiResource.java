@@ -28,6 +28,7 @@ import org.wanja.hue.config.HueBridgeConfig;
 import org.wanja.hue.config.HueBridgeConfig.HueBridge;
 import org.wanja.hue.remote.Action;
 import org.wanja.hue.remote.Bridge;
+import org.wanja.hue.remote.CachedHueBridgeService;
 import org.wanja.hue.remote.HueLightsService;
 import org.wanja.hue.remote.Light;
 import org.wanja.hue.remote.Room;
@@ -58,10 +59,7 @@ public class PublicApiResource {
         HueLightsService service = cachedBridges.get(b.id);
 
         if( service == null ) {
-            
-            service = RestClientBuilder.newBuilder()
-                    .baseUrl(new URL(b.baseURL + b.authToken))
-                    .build(HueLightsService.class);
+            service = new CachedHueBridgeService(b);            
             cachedBridges.put(b.id, service);
         }
         return service;
