@@ -2,6 +2,8 @@ package org.wanja.hue.remote;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -58,8 +60,8 @@ public class CachedHueBridgeService implements HueLightsService {
 
     @Override
     public Light getLightById(String id) {
-        Log.debugf("Getting light %s of bridge %s", id, bridge.name);
-        return lightCache.get(id, k -> service.getLightById(k));
+        Log.infof("Getting light %s of bridge %s", id, bridge.name);
+        return lightCache.get(id, k->service.getLightById(id));
     }
 
     @Override

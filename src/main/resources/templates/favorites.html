@@ -90,3 +90,35 @@
     </div>
     
 </div>
+
+
+<script>
+    window.addEventListener("load", function (e) {
+        let events = new EventSource("/events/lights");
+        let initialCall = true;
+        events.onmessage = function (event) {
+            let newLights = JSON.parse(event.data);
+
+            if( initialCall ) {
+                console.log("Initial event from server. We are getting all " + newLights.length + " lights");
+                initialCall = false;
+                allLights = newLights;
+            }
+            else {
+                console.log("This is an update call from server. " + newLights.length + " lights have been updated");
+
+                for (let i = 0; i < newLights.length; i++) {
+                    let light = newLights[i];
+                    console.log("Light " + light.id + " - " + light.name + " has changed");
+                    let localLight = findLightById(light.id);
+                    if( localLight){
+                        console.log("  found local light");
+                        localLight.state.on  = light.state.on;
+                        localLight.state.bri = light.state.bri;
+                        updateLightControls(localLight);
+                    }
+                }
+            }
+        };
+    });
+</script>

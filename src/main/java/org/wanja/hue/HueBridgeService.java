@@ -46,7 +46,7 @@ public class HueBridgeService {
      * @param id hue id to return light
      * @return Light
      */
-    public Light getLight(HueLightsService hueService, String id) {
+    public Light getLightById(HueLightsService hueService, String id) {
         return hueService.getLightById(id);
     }
 
@@ -83,7 +83,7 @@ public class HueBridgeService {
                 if( room.lights != null && room.lights.length > 0) {
                     room.allLights = new ArrayList<Light>();
                     for( String l : room.lights ){
-                        Light light = hueService.getLightById(l);
+                        Light light = getLightById(hueService,l);
                         light.number = l;
                         light.roomNumber = key;
                         light.bridgeId = room.bridge.id;
@@ -99,7 +99,7 @@ public class HueBridgeService {
         Room bridgeRoom = hueService.getRoomById(room.number);
         room.action = bridgeRoom.action;
         for( Light light : room.allLights ) {
-            Light l = getLight(hueService, light.number);
+            Light l = getLightById(hueService, light.number);
             light.state = l.state;
         }
         return room;

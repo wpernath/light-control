@@ -5,9 +5,11 @@
      * @returns light or null
      */
     function findLightById(lightId) {
-        for( var i=0; i < allLights.length; i++ ){
-            if( allLights[i].id == lightId) {
-                return allLights[i];
+        if( allLights ) {
+            for( var i=0; i < allLights.length; i++ ){
+                if( allLights[i].id == lightId) {
+                    return allLights[i];
+                }
             }
         }
         return null;
@@ -19,9 +21,11 @@
      * @returns 
      */
     function findRoomById(roomId) {
-        for(var i=0; i < rooms.length; i++) {
-            if( rooms[i].id == roomId) {
-                return rooms[i];
+        if( rooms ) {
+            for(var i=0; i < rooms.length; i++) {
+                if( rooms[i].id == roomId) {
+                    return rooms[i];
+                }
             }
         }
         return null;
@@ -31,17 +35,18 @@
     /**
      * 
      * @param {long} roomId 
-     * @returns 
+     * @returns 0 .. number of litten bulbs
      */
     function roomHasLittenBulbs(roomId) {
-        var room = findRoomById(roomId);
+        let room = findRoomById(roomId);
+        let numberOfLittenBulbs = 0; 
         if( room ) {
-            for(var i=0; i < room.lights.length; i++) {
-                var light = room.lights[i];
-                if( light.on ) return true;
+            for(var i=0; i < room.allLights.length; i++) {
+                var light = room.allLights[i];
+                if( light.state.on ) numberOfLittenBulbs++;;
             }
         }
-        return false;
+        return numberOfLittenBulbs;
     }
 
     /**
@@ -50,11 +55,10 @@
      */
     function toggleRoom(roomId) {
         let room = findRoomById(roomId);
-        let state;
         if( room ) {
-            room.on = !room.on;
+            room.action.on = !room.action.on;
 
-            state = room.on;
+            state = room.action.on;
             $.ajax({
                 url: "/api/rooms/toggle",
                 method: "GET",
@@ -63,15 +67,15 @@
                 },
                 data: {
                     "id": roomId,
-                    "on": room.on
+                    "on": room.action.on
                 }
             }).then(
                 function(response){                
 
                     // update all light controls
-                    for( var i=0; i < room.lights.length; i++ ){
-                        let light = room.lights[i];
-                        light.on  = room.on;
+                    for( var i=0; i < room.allLights.length; i++ ){
+                        let light = room.allLights[i];
+                        light.state.on  = room.action.on;
                         updateLightControls(light);
                     }                    
 
@@ -113,7 +117,7 @@
             console.log("changeLightBrightness(" + lightId + ", " + bri + ")");
             let light = findLightById(lightId);
             if( light ){
-                light.bri = bri;
+                light.state.bri = bri;
                 updateLightState(light);
             }
         }
@@ -127,8 +131,11 @@
         console.log("toggleLightOnOff(" + lightId + ")");
         let light = findLightById(lightId);
         if( light ) {
-            light.on = !light.on;
+            light.state.on = !light.state.on;
             updateLightState(light);            
+        }
+        else { 
+            console.log("light with id " + lightId + " not found"); 
         }
     }
 
@@ -136,8 +143,8 @@
         console.log("allLightsOff()");
         for( let i=0; i < allLights.length; i++) {
             let light = allLights[i];
-            if( light.on ) {
-                light.on = false;
+            if( light.state.on ) {
+                light.state.on = false;
                 updateLightState(light);
             }
         }
@@ -148,7 +155,7 @@
      */
     function updateLightState(light) {
         if( light ){
-            console.log("updateLightState(" + light.id + ", " + light.on + ", " + light.bri + ")");
+            console.log("updateLightState(" + light.id + ", " + light.state.on + ", " + light.state.bri + ")");
             $.ajax({
                 url: "/api/lights/toggle",
                 method: "GET",
@@ -157,8 +164,8 @@
                 },
                 data: {
                     "id": light.id,
-                    "on": light.on,
-                    "bri": light.bri
+                    "on": light.state.on,
+                    "bri": light.state.bri
                 }
             }).then(
                 function(response){
@@ -178,6 +185,8 @@
      * @param {*} room 
      */
     function updateRoomControls(room) {
+        if( room == null ) return;
+
         console.log("updateRoomControls(" + room.id + ")");
         let rounded = "#room_" + room.id;
         let img     = document.getElementById("img_room_" + room.id);
@@ -185,15 +194,18 @@
         let imgName;
 
         $( rounded ).removeClass("bg-white bg-black fg-white fg-black");
-        if(room.hasLittenBulbs()) {
-            $( rounded ).addClass("bg-white fg-black");
-            imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png";   
-            descr.textContent = room.numberOfLittenBulbs() + " lights on";
-        }
+        let numberOfLittenBulbs = roomHasLittenBulbs(room.id);
+
+        if( numberOfLittenBulbs > 0) {
+          $(rounded).addClass("bg-white fg-black");
+          imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png";
+          descr.textContent = numberOfLittenBulbs + " lights on";
+        } 
         else {
-            $( rounded ).addClass("fg-white bg-black");
-            imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png";   
-            descr.textContent = "All lights off";
+          $(rounded).addClass("fg-white bg-black");
+          imgName =
+            "https://img.icons8.com/color-glass/48/000000/light-off.png";
+          descr.textContent = "All lights off";
         }
         img.src = imgName;
 
@@ -212,8 +224,8 @@
         if( img ) {
             var imgName;
             $( "#div_light_" + lightId ).removeClass("bg-white fg-black fg-white bg-black");
-            if( light.on ) {
-                var percent = (light.bri/254)*100;
+            if( light.state.on ) {
+                var percent = (light.state.bri/254)*100;
                 if( div ) div.textContent = percent.toFixed() + " %";
                 imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png";       
                 $( "#div_light_" + lightId ).addClass("bg-white fg-black");                     
@@ -226,8 +238,8 @@
             img.src = imgName;
 
             if( slid ) {
-                slid.disabled=!light.on;
-                slid.value = light.bri;
+                slid.disabled=!light.state.on;
+                slid.value = light.state.bri;
             }
         }
     }

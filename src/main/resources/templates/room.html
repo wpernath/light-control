@@ -103,16 +103,48 @@
 </div>
 
 <script>
-    window.onload = function() {
+    window.addEventListener("load", function(e) {
         // update controls for this room
-        updateRoomControls(findRoomById({selectedRoom.id}));
+        console.log("room.html onload()");
 
-        //let events = new EventSource("/events");
-        //events.onmessage = function(event) {
-        //    let rooms = JSON.parse(event.data);
+        // we want to be notified by SSE
+        let events = new EventSource("/events/room");
+        let initialCall = true;
+        events.onmessage = function (event) {
+            console.log("Event FROM SERVER!");
+            let newRooms = JSON.parse(event.data);
+            
+            if (initialCall) {
+                console.log("Initial event from server. We are getting all " + newRooms.length + " rooms.");
+                initialCall = false;
+                rooms = newRooms;
+                updateRoomControls(findRoomById({selectedRoom.id}));
+            }
+            
+            console.log("This is an update call from server. " + newRooms.length + "rooms have been updated");
 
-        //    console.log("This is coming from the server: " + rooms[0].name);
-        //};
+            for (let i = 0; i < newRooms.length; i++) {
+                let room = newRooms[i];
+                console.log("Room " + room.id + " - " + room.name + " has changed");
+
+                if( selectedRoomId === room.id ) {
+                    console.log("  It's the room, we're showing");
+                    selectedRoom.action = room.action;   
+                    
+                    // update lights from this room
+                    for( let l = 0; l < room.allLights.length; l++ ) {
+                        let newLight = room.allLights[l];
+                        let light    = findLightById(newLight.id);
+
+                        if( light ) {
+                            light.state = newLight.state;
+                            updateLightControls(light);
+                        }
+                    }
+                    break;
+                }                    
+            }
+        };
 
         // add event listener for the controls which would 
         // else fire already on page load
@@ -139,7 +171,7 @@
             changeLightSaturation('{light.id}', this.value);
         }
 {/for}
-    }
+    });
 </script>
 
 

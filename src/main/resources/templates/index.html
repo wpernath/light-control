@@ -161,24 +161,43 @@
 
     <script>
         // Elements to inject
-            var mySVGsToInject = document.querySelectorAll('img.inject-me');
+        var mySVGsToInject = document.querySelectorAll('img.inject-me');
 
-            // Options
-            var injectorOptions = {
-                evalScripts: 'once',
-                pngFallback: 'assets/png',
-                each: function (svg) {
-                    // Callback after each SVG is injected
-                    if (svg) console.log('SVG injected: ' + svg.getAttribute('id'));
-                }
-            };
+        // Options
+        var injectorOptions = {
+            evalScripts: 'once',
+            pngFallback: 'assets/png',
+            each: function (svg) {
+                // Callback after each SVG is injected
+                if (svg) console.log('SVG injected: ' + svg.getAttribute('id'));
+            }
+        };
 
-            // Trigger the injection
-            SVGInjector(mySVGsToInject, injectorOptions, function (totalSVGsInjected) {
-                // Callback after all SVGs are injected
-                console.log('We injected ' + totalSVGsInjected + ' SVG(s)!');
+        // Trigger the injection
+        SVGInjector(mySVGsToInject, injectorOptions, function (totalSVGsInjected) {
+            // Callback after all SVGs are injected
+            console.log('We injected ' + totalSVGsInjected + ' SVG(s)!');
+        });
+
+        // add onLoad listener to update local variables
+        window.addEventListener("load", function(e) {
+            let lights;
+            let r;
+            $.getJSON("/api/lights/all", (lights) => {
+                console.log("recieved #" + lights.length + " lights");
+                allLights = lights;
             });
 
+            $.getJSON("/api/rooms", (r) => {
+                rooms = r;
+                console.log("recieved #" + r.length + " rooms");
+
+                if( selectedState === 'room') {
+                    selectedRoom = findRoomById(selectedRoomId);
+                    console.log("selected room = " + selectedRoomId + " (" + selectedRoom.name + ")");
+                }
+            });
+        });
     </script>
 </body>
 

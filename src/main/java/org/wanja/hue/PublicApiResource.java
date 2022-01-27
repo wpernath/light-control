@@ -32,6 +32,7 @@ import org.wanja.hue.remote.Light;
 import org.wanja.hue.remote.Room;
 import org.wanja.hue.remote.Sensor;
 import org.wanja.hue.remote.SensorConfig;
+import org.wanja.hue.sse.BroadcasterService;
 import org.wanja.hue.remote.LightState;
 
 import io.quarkus.panache.common.Sort;
@@ -51,8 +52,19 @@ public class PublicApiResource {
     @Inject
     HueBridgeConfig bridgeConfig;
 
+    @Inject
+    BroadcasterService broadcaster;
+
     Map<Long, HueLightsService> cachedBridges = new HashMap<Long, HueLightsService>();
 
+    /**
+     * 
+     * @param b
+     * @return
+     * @throws IllegalStateException
+     * @throws RestClientDefinitionException
+     * @throws MalformedURLException
+     */
     HueLightsService hueServiceByBridge(Bridge b) throws IllegalStateException, RestClientDefinitionException, MalformedURLException  {
         HueLightsService service = cachedBridges.get(b.id);
 
@@ -312,7 +324,7 @@ public class PublicApiResource {
     @GET
     @Path("/lights/toggle")
     @Consumes(MediaType.TEXT_PLAIN)
-    public void toggleLightById(@QueryParam Long id, @QueryParam Boolean on, @QueryParam Integer bri) throws MalformedURLException {
+    public void toggleLightById(@QueryParam Long id, @QueryParam Boolean on, @QueryParam Integer bri) throws Exception {
         Light light = Light.findById(id);
         if (light == null)
             throw new WebApplicationException("No Light with id " + id + " found!");
@@ -324,13 +336,20 @@ public class PublicApiResource {
         state.on = on;
         state.bri = bri;
         lightService.setLightState(service, light.number, state);
+
+        // broadcast light change
+        light.state = lightService.getLightById(service, light.number).state;
+        broadcaster.broadcastLightChanges(light);
+
+        // broadcast room change
+        broadcaster.broadcastRoomChanges(roomByName(room.name));
     }
 
     @GET
     @Path("/rooms/toggle")
     @Consumes(MediaType.TEXT_PLAIN)
     public void toggleRoomById(@QueryParam Long id, @QueryParam Boolean on, @QueryParam Integer bri)
-            throws MalformedURLException {
+            throws Exception {
         Room room = Room.findById(id);
         if (room == null)
             throw new WebApplicationException("No Room with id " + id + " found!");
@@ -341,27 +360,37 @@ public class PublicApiResource {
         state.on = on;
         state.bri = bri;
         lightService.setRoomScene(service, room.number, state);
+        
+        // update requestors
+        room = roomByName(room.name);
+        broadcaster.broadcastRoomChanges(room);
+        broadcaster.broadcastLightsChanges(room.allLights);
     }
 
 
     @GET
     @Path("/lights/all")
-    public List<Light> retrieveAllLights() throws IllegalStateException, RestClientDefinitionException, MalformedURLException {
-        List<Light> lights = Light.findAll().list();
-        Map<Long, Bridge> bridgeMap = new HashMap<>();
-
-        for( Light l : lights ) {
-            // find bridge to ask
-            Bridge b = bridgeMap.get(l.bridgeId);
-            if( b == null ) {
-                b = Bridge.findById(l.bridgeId);
-                bridgeMap.put(l.bridgeId, b);
-            }
-            Light newLight = hueServiceByBridge(b).getLightById(l.id.toString());
-            l.state = newLight.state;
+    public List<Light> allLights() throws Exception {
+        List<Room> emptyRooms = allRooms();
+        List<Light> allLights = new ArrayList<Light>();
+    
+        for (Room r : emptyRooms) {
+            Room f = roomByName(r.name);
+            allLights.addAll(f.allLights);
         }
-        return lights;
+        return allLights;
     }
 
+    @Path("/lights/{id}")
+    @GET
+    public Light lightById(@PathParam Long id) throws IllegalStateException, RestClientDefinitionException, MalformedURLException {
+        Light l = Light.findById(id);
+        if( l != null ) {
+            Bridge b = Bridge.findById(l.bridgeId);
+            LightState state = hueServiceByBridge(b).getLightById(l.number).state;
+            l.state = state; 
+        }
+        return l;
+    }
 
 }

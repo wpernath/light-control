@@ -33,6 +33,9 @@ public class Light extends PanacheEntity {
     // The room number for Hue
     public String roomNumber;
 
+    public Light() {
+    }
+
     @Override
     public String toString() {
         return "Light [manufacturername=" + manufacturername + ", modelid=" + modelid + ", name=" + name + ", number="
