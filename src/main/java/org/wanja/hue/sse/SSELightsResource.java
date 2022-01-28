@@ -1,16 +1,15 @@
 package org.wanja.hue.sse;
 
 
-import java.util.Arrays;
+
 import java.util.List;
 
-
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.json.bind.JsonbBuilder;
-import javax.ws.rs.Consumes;
+
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -22,22 +21,40 @@ import javax.ws.rs.sse.SseEventSink;
 import org.wanja.hue.PublicApiResource;
 import org.wanja.hue.remote.Light;
 
-import io.vertx.core.json.JsonArray;
+import io.quarkus.logging.Log;
+
 
 
 @Path("/events/lights")
 @Produces(MediaType.SERVER_SENT_EVENTS)
-@Singleton
+@ApplicationScoped
 public class SSELightsResource implements SSEEventListener<Light> {
     
-    @Context
-    private Sse sse;
     
+    private Sse sse;
+    private SseBroadcaster broadcaster;
+
     @Inject
     PublicApiResource api;
 
-    private volatile SseBroadcaster sseBroadcaster;
+    @Context
+    public synchronized void setSse(Sse sse) {
+        if( this.sse != null ) {
+            Log.infof("SSE already initialized!");
+            return;
+        }
+        Log.info("Initialiazing SSELights");
+        this.sse = sse;
+        this.broadcaster = sse.newBroadcaster();
+        this.broadcaster.onClose(eventSink -> Log.infof("OnClose EventSink %s", eventSink));
+        this.broadcaster.onError(
+                (eventSink, throwable) -> {
 
+                    Log.errorf("OnError EventSink %s, Throwable %s", eventSink, throwable);
+                    throwable.printStackTrace();
+                    return;
+                });
+    }
 
     /**
      * Register for light updates. Once you're calling this, you get
@@ -59,20 +76,24 @@ public class SSELightsResource implements SSEEventListener<Light> {
      */
     @GET
     public void register(@Context SseEventSink sink) throws Exception {
+        if( sse == null ) {
+            Log.infof("No sse available. Component not initialized?");
+            return;
+        }
         List<Light> allLights = api.allLights();
 
         String lights = JsonbBuilder.create().toJson(allLights.toArray());
         sink.send(sse.newEvent(lights));
 
-        if( sseBroadcaster == null ) sseBroadcaster = sse.newBroadcaster();
-        sseBroadcaster.register(sink);
+        broadcaster.register(sink);
     }
 
     public void broadcast(List<Light> lights) {
-        if (sseBroadcaster == null)
-            sseBroadcaster = sse.newBroadcaster();
-        
-
-        sseBroadcaster.broadcast(sse.newEvent(JsonbBuilder.create().toJson(lights.toArray())));
+        if(sse == null ) {
+            Log.info("No sse available. Component not initialized?");
+            return;
+        }
+        Log.infof("Sending a broadcast message with %d updated lights",lights.size() );
+        broadcaster.broadcast(sse.newEvent(JsonbBuilder.create().toJson(lights.toArray())));
     }
 }

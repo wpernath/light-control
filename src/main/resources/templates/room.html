@@ -128,7 +128,7 @@
                 console.log("Room " + room.id + " - " + room.name + " has changed");
 
                 if( selectedRoomId === room.id ) {
-                    console.log("  It's the room, we're showing");
+                    console.log("  The room, we are showing has changed its state");
                     selectedRoom.action = room.action;   
                     
                     // update lights from this room
@@ -141,6 +141,7 @@
                             updateLightControls(light);
                         }
                     }
+                    updateRoomControls(room);
                     break;
                 }                    
             }
