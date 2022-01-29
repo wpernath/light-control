@@ -193,7 +193,7 @@
         let descr   = document.getElementById("room_descr_" + room.id);
         let imgName;
 
-        $( rounded ).removeClass("bg-white bg-black fg-white fg-black");
+        $( rounded ).removeClass("bg-white bg-black fg-white fg-black bg-dark");
         let numberOfLittenBulbs = roomHasLittenBulbs(room.id);
 
         if( numberOfLittenBulbs > 0) {
@@ -202,7 +202,7 @@
           descr.textContent = numberOfLittenBulbs + " lights on";
         } 
         else {
-          $(rounded).addClass("fg-white bg-black");
+          $(rounded).addClass("fg-white bg-dark");
           imgName =
             "https://img.icons8.com/color-glass/48/000000/light-off.png";
           descr.textContent = "All lights off";
@@ -223,7 +223,7 @@
         let div = document.getElementById("state_" + lightId);
         if( img ) {
             var imgName;
-            $( "#div_light_" + lightId ).removeClass("bg-white fg-black fg-white bg-black");
+            $( "#div_light_" + lightId ).removeClass("bg-white fg-black fg-white bg-black bg-dark");
             if( light.state.on ) {
                 var percent = (light.state.bri/254)*100;
                 if( div ) div.textContent = percent.toFixed() + " %";
@@ -233,7 +233,7 @@
             else {
                 if( div ) div.textContent = "Off";
                 imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png";
-                $( "#div_light_" + lightId ).addClass("fg-white bg-black");
+                $( "#div_light_" + lightId ).addClass("fg-white bg-dark");
             }
             img.src = imgName;
 
@@ -244,6 +244,21 @@
         }
     }
 
+    function updateSensorControls(sensors) {
+        console.log("Updating temperature controls with new data.")
+        if(sensors) {
+            
+            for( let i=0; i < sensors.length; i++) {
+                let sensor = sensors[i];
+                let para   = document.getElementById("sensor_" + sensor.id);
+                if( para ) {
+                    
+                    let tmp = (sensor.state.temperature / 100);
+                    para.innerHTML = tempFormatter.format(tmp) + "°";
+                }
+            }
+        }
+    }
 
     /**
      * updates the details of a sensor (right now only the name)

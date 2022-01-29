@@ -197,6 +197,16 @@
                     console.log("selected room = " + selectedRoomId + " (" + selectedRoom.name + ")");
                 }
             });
+
+            // Create EventSource to listen on temperature changes 
+            // coming form the corresponding sensors
+            let events = new EventSource("/events/temp");
+            events.onmessage = function (event) {
+                console.log("Events with Temperatures FROM SERVER!");
+                let newSensors = JSON.parse(event.data);
+                
+                updateSensorControls(newSensors);
+            };            
         });
     </script>
 </body>

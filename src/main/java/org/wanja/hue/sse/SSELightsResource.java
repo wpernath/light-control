@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.json.bind.JsonbBuilder;
 
 import javax.ws.rs.GET;
@@ -50,8 +49,7 @@ public class SSELightsResource implements SSEEventListener<Light> {
         this.broadcaster.onError(
                 (eventSink, throwable) -> {
 
-                    Log.errorf("OnError EventSink %s, Throwable %s", eventSink, throwable);
-                    throwable.printStackTrace();
+                    Log.errorf("OnError EventSink %s, Throwable %s", eventSink, throwable);                    
                     return;
                 });
     }
@@ -88,7 +86,7 @@ public class SSELightsResource implements SSEEventListener<Light> {
         broadcaster.register(sink);
     }
 
-    public void broadcast(List<Light> lights) {
+    public synchronized void broadcast(List<Light> lights) {
         if(sse == null ) {
             Log.info("No sse available. Component not initialized?");
             return;

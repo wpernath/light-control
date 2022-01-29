@@ -45,8 +45,7 @@ public class SSERoomResource implements SSEEventListener<Room> {
         this.broadcaster.onError(
                 (eventSink, throwable) -> {
 
-                    Log.errorf("OnError EventSink %s, Throwable %s", eventSink, throwable);
-                    throwable.printStackTrace();
+                    Log.errorf("OnError EventSink %s, Throwable %s", eventSink, throwable);                    
                     return;
                 });
     }
@@ -74,7 +73,7 @@ public class SSERoomResource implements SSEEventListener<Room> {
     }
 
     @Override
-    public void broadcast(List<Room> event) {
+    public synchronized void broadcast(List<Room> event) {
         if (sse == null) {
             Log.infof("No sse available. Component not initialized?");
             return;

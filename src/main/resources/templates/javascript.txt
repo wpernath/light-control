@@ -1,4 +1,12 @@
     // those values are being set from qute by quarkus. 
+    const tempFormatter = new Intl.NumberFormat('de-DE', {
+//        style: 'unit',
+//        unit: 'celsius',
+//        unitDisplay: 'short',
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+    });
+
     const selectedState    = '{state}';
     {#if state is 'room' }
     const selectedRoomName = '{selectedRoom.name}';
