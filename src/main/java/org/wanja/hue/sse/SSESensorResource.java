@@ -65,7 +65,7 @@ public class SSESensorResource implements SSEEventListener<Sensor> {
         
     }
 
-    @Scheduled(every = "15s", identity = "temperature-sensors")
+    @Scheduled(every = "15m", identity = "temperature-sensors")
     void broadcast() {
         Log.infof("Updating temperature sensors.");
         try {

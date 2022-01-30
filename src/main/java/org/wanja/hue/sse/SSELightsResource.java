@@ -21,6 +21,7 @@ import org.wanja.hue.PublicApiResource;
 import org.wanja.hue.remote.Light;
 
 import io.quarkus.logging.Log;
+import io.quarkus.scheduler.Scheduled;
 
 
 
@@ -84,6 +85,17 @@ public class SSELightsResource implements SSEEventListener<Light> {
         sink.send(sse.newEvent(lights));
 
         broadcaster.register(sink);
+    }
+
+    @Scheduled(every = "15s", identity = "lights")
+    public void broadcast() {
+        try {
+            List<Light> allLights = api.allLights();
+            broadcast(allLights);
+        } 
+        catch (Exception e) {
+            Log.error(e);
+        }
     }
 
     public synchronized void broadcast(List<Light> lights) {
