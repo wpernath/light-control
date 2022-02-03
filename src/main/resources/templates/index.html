@@ -43,19 +43,18 @@
                 <button class="pull-button m-0 bg-darkCyan-hover">
                     <span class="mif-menu fg-white"></span>
                 </button>
-                <a href="/ui/index"><h2 class="text-light m-0 fg-white pl-7" style="line-height: 52px">light-control</h2></a>
+                <a href="/ui/index"><h2 class="text-light m-0 fg-white pl-7" style="line-height: 36px">light-control</h2></a>
             </div>
         
-        
-            <!--div class="suggest-box">
-                <input type="text" data-role="input" data-clear-button="false" data-search-button="true">
-                <button class="holder">
-                    <span class="mif-search fg-white"></span>
-                </button>
-            </div -->
-
             <ul class="navview-menu mt-4" id="side-menu">
                 <li class="item-header">MAIN NAVIGATION</li>
+
+                <li>
+                    <a href="/ui/index">
+                        <span class="icon"><span class="mif-home"></span></span>
+                        <span class="caption">Home</span>
+                    </a>
+                </li>
                 <li>
                     <a href="/ui/favorites">
                         <span class="icon"><span class="mif-favorite"></span></span>
@@ -63,19 +62,12 @@
                     </a>
                 </li>
 
-                <li>
-                    <a href="/ui/sensors">
-                        <span class="icon"><span class="mif-alarm"></span></span>
-                        <span class="caption">Sensors</span>
-                    </a>
-                </li>
-
-                <li>
+                <!--li>
                     <a href="/ui/all-rooms">
                         <span class="icon"><span class="mif-home"></span></span>
                         <span class="caption">All Rooms</span>
                     </a>
-                </li>
+                </li -->
 
                 {#for room in rooms}
                 <li>
@@ -109,21 +101,50 @@
                         </a>
 
                         <div class="user-block shadow-1" data-role="collapse" data-collapsed="true">
-                            <div class="bg-darkCyan fg-white p-2 text-center">
+                            <ul class="navview-menu bg-darkCyan fg-white p-2 text-center">
                                 
-                                <div class="h4 mb-0"><span class="mif-cogs"></span>&nbsp;Settings</div>
-                                <div class="bg-white d-flex flex-justify-between flex-equal-items p-2 bg-light">
-                                    <button class="button mr-1" onclick="createDatabase();">Create Database</button>                                    
-                                </div>
-                                <div class="bg-white d-flex flex-justify-between flex-equal-items p-2 bg-light">
-                                    <button class="button mr-1" onclick="deleteDatabase();">Delete Database</button>
-                                </div>
-                                <div class="bg-white d-flex flex-justify-between flex-equal-items p-2 bg-light">
-                                    <button class="button mr-1" onclick="updateDatabase();">Update Database</button>
-                                </div>
-                                <hr />
+                                <li><span class="mif-cogs"></span>&nbsp;Settings</li>
+                                <li >
+                                    <a class="mr-1" onclick="createDatabase();">
+                                        <span class="icon"><span class="mif-beenhere"></span></span>
+                                        <span class="caption">Create Database</span>
+                                    </a>  
+                                </li>
+                                <li >
+                                    <a class="mr-1" onclick="deleteDatabase();">
+                                        <span class="icon"><span class="mif-cancel"></span></span>
+                                        <span class="caption">Delete Database</span>
+                                    </a>
+                                </li>
+                                <li >
+                                    <a class="mr-1" onclick="updateDatabase();">
+                                        <span class="icon"><span class="mif-balance-scale"></span></span>
+                                        <span class="caption">Update Database</span>
+                                    </a>
+                                </li>
+                                <li >
+                                    <a class="mr-1" onclick="addBridge();">
+                                        <span class="icon"><span class="mif-add"></span></span>
+                                        <span class="caption">Add Bridge to Database</span>
+                                    </a>
+                                </li>
 
-                            </div>
+                                <hr />
+                                <li>
+                                    <a href="/ui/info">
+                                        <span class="icon"><span class="mif-info"></span></span>
+                                        <span class="caption">Database Info</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="/ui/sensors">
+                                        <span class="icon"><span class="mif-alarm"></span></span>
+                                        <span class="caption">Edit Sensors</span>
+                                    </a>
+                                </li>
+                
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -134,8 +155,11 @@
 
              {#switch state} 
                 {#case 'index'}
-                    {#include intro /}
-                    
+                    {#include home /}
+
+                {#case 'info'}
+                    {#include info /}
+
                 {#case 'room'}
                     {#include room /}
 
