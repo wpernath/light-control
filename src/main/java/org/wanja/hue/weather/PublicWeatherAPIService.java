@@ -30,6 +30,16 @@ public class PublicWeatherAPIService {
     @ConfigProperty(name = "weather.api-key")
     String weatherAPIKey;
 
+    @ConfigProperty(name="weather.default.city")
+    String defaultCity;
+
+    @ConfigProperty(name="weather.default.zip")
+    String defaultZip;
+
+    @ConfigProperty(name="weather.default.country")
+    String defaultCountry;
+
+
     @Inject
     @RestClient
     OpenWeatherAPIService service;
@@ -62,6 +72,22 @@ public class PublicWeatherAPIService {
     }
 
     @GET
+    @Path("default-city")
+    public WeatherResponse weatherByCity() {
+        CityResource city=new CityResource(defaultCity, defaultZip, defaultCountry);
+        Log.infof("weatherByCity(%s, %s, %s)", city.city, city.zip, city.country);
+        return weatherByCity(city);
+    }
+
+    @GET
+    @Path("default-forecast")
+    public ForecastResponse weatherForecast() {
+        CityResource city=new CityResource(defaultCity, defaultZip, defaultCountry);
+        Log.infof("weatherForecast(%s, %s, %s)", city.city, city.zip, city.country);
+        return weatherForecast(city);
+    }
+
+    @GET
     @Path("forecast")
     public ForecastResponse weatherForecast(CityResource city) {
         Log.infof("weatherForecast(%s, %s, %s)", city.city, city.zip, city.country);
@@ -80,4 +106,6 @@ public class PublicWeatherAPIService {
         }
         return null;
     }
+
+
 }

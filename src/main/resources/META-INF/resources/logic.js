@@ -351,8 +351,15 @@
 
 
     function updateDatabase() {
-
+        alert("TODO");
+        window.location.reload(true);
     }
+
+    function addBridge() {
+        alert("TODO");
+        window.location.reload(true);
+    }
+
 
     function deleteDatabase() {
         $.ajax({

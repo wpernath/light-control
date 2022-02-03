@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import org.wanja.hue.PublicApiResource;
 import org.wanja.hue.remote.Room;
 import org.wanja.hue.remote.Sensor;
+import org.wanja.hue.weather.PublicWeatherAPIService;
 import org.wanja.hue.remote.Light;
 
 import io.quarkus.qute.Template;
@@ -27,6 +28,9 @@ public class PublicRenderResource {
 
     @Inject
     PublicApiResource api;
+
+    @Inject
+    PublicWeatherAPIService weather;
 
     private List<Sensor> allTemperatureSensors() throws Exception {
         List<Sensor> temperatur = api.allSensorsByType("ZLLTemperature");
@@ -49,6 +53,30 @@ public class PublicRenderResource {
         }
 
         TemplateInstance ti = index.data("state", "index");
+        ti.data("rooms", rooms);
+        ti.data("selectedRoom", null);
+        ti.data("bridges", api.allBridges(true));
+        ti.data("sensors", api.allSensors());
+        ti.data("lights", allLights);
+        ti.data("temperatureSensors", allTemperatureSensors());
+        ti.data("weather", weather.weatherByCity());
+        ti.data("forecast", weather.weatherForecast());
+        return ti;
+    }
+
+    @GET
+    @Path("/info")
+    public TemplateInstance renderInfo() throws Exception {
+        Log.infof("Rendering info page");
+        List<Room> emptyRooms = api.allRooms();
+        List<Light> allLights = new ArrayList<Light>();
+        List<Room> rooms = new ArrayList<Room>(emptyRooms.size());
+        for(Room r : emptyRooms ){
+            rooms.add(api.roomByName(r.name));
+            allLights.addAll(r.allLights);
+        }
+
+        TemplateInstance ti = index.data("state", "info");
         ti.data("rooms", rooms);
         ti.data("selectedRoom", null);
         ti.data("bridges", api.allBridges(true));

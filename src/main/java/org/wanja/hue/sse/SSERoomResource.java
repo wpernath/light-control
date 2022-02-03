@@ -5,16 +5,15 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 
 import org.wanja.hue.PublicApiResource;
 import org.wanja.hue.remote.Room;
