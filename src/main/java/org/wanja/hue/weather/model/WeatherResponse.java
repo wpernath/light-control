@@ -1,6 +1,9 @@
 package org.wanja.hue.weather.model;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class WeatherResponse {
 
@@ -18,5 +21,8 @@ public class WeatherResponse {
     public String name;
     public Integer cod;
 
+    public String dtString() {
+        return DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY).format(new Date(dt * 1000));
+    }
     
 }

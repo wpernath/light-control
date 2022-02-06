@@ -1,6 +1,9 @@
 package org.wanja.hue.weather.model;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.json.bind.annotation.JsonbProperty;
 
@@ -35,5 +38,26 @@ public class DayForecastData {
     public Float windDeg;
 
     public List<Weather> weather;
+
+
+    public String moonriseString() {
+        return DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY).format(new Date(moonrise * 1000));
+    }
+
+    public String moonsetString() {
+        return DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY).format(new Date(moonset * 1000));
+    }
+
+    public String sunriseString() {
+        return DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY).format(new Date(sunrise * 1000));
+    }
+
+    public String sunsetString() {
+        return DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY).format(new Date(sunset * 1000));
+    }
+
+    public String dtString() {
+        return DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY).format(new Date(dt * 1000));
+    }
 
 }

@@ -9,5 +9,6 @@ public class ForecastResponse {
     public Integer timezoneOffset;
     public ForecastData current;
     public List<DayForecastData> daily;
+    public List<DayForecastData> hourly;
     public List<AlertData> alerts;
 }

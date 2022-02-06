@@ -16,6 +16,7 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.wanja.hue.weather.model.CityResource;
+import org.wanja.hue.weather.model.Coordinates;
 import org.wanja.hue.weather.model.ForecastResponse;
 import org.wanja.hue.weather.model.WeatherResponse;
 
@@ -44,14 +45,20 @@ public class PublicWeatherAPIService {
     @RestClient
     OpenWeatherAPIService service;
 
-    LoadingCache<CityResource, WeatherResponse> cache;
+    LoadingCache<CityResource, WeatherResponse> weatherCache;
+    LoadingCache<Coordinates, ForecastResponse> forecastCache;
 
     public PublicWeatherAPIService() {
         Log.info("PublicWeatherAPIService() created");
 
-        cache = Caffeine.newBuilder()
+        weatherCache = Caffeine.newBuilder()
             .expireAfterWrite(60, TimeUnit.MINUTES)
             .build(k -> loadWeatherData(k));
+
+        forecastCache = Caffeine.newBuilder()
+                .expireAfterWrite(60, TimeUnit.MINUTES)
+                .build(k -> loadForecastData(k));
+
     }
 
     /**
@@ -64,11 +71,20 @@ public class PublicWeatherAPIService {
         return service.weatherByCity(city.queryString(), weatherAPIKey, "metric", "de");
     }
 
+    /**
+     * Private method to be used to fill the cache
+     * @param coors coordinates of place to be used
+     * @return weather forecast response
+     */
+    private ForecastResponse loadForecastData(Coordinates coors) {
+        return service.onecall(coors.lat, coors.lon, weatherAPIKey, "minutely,hourly", "metric", "de");
+    }
+
     @GET
     @Path("city")
     public WeatherResponse weatherByCity(CityResource city) {
         Log.infof("weatherByCity(%s, %s, %s)", city.city, city.zip, city.country);
-        return cache.get(city, k->loadWeatherData(k));
+        return weatherCache.get(city, k->loadWeatherData(k));
     }
 
     @GET
@@ -92,14 +108,14 @@ public class PublicWeatherAPIService {
     public ForecastResponse weatherForecast(CityResource city) {
         Log.infof("weatherForecast(%s, %s, %s)", city.city, city.zip, city.country);
 
-        WeatherResponse wr = cache.get(city, k->loadWeatherData(city));
+        WeatherResponse wr = weatherCache.get(city, k->loadWeatherData(city));
 
         if( wr != null ) {
             return service.onecall(
                     wr.coord.lat, 
                     wr.coord.lon, 
                     weatherAPIKey, 
-                    "hourly,minutely", 
+                    "minutely,hourly", 
                     "metric", 
                     "de"
             );
