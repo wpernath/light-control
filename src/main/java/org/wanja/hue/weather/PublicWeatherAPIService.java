@@ -1,5 +1,6 @@
 package org.wanja.hue.weather;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -8,6 +9,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -18,6 +20,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.wanja.hue.weather.model.CityResource;
 import org.wanja.hue.weather.model.Coordinates;
 import org.wanja.hue.weather.model.ForecastResponse;
+import org.wanja.hue.weather.model.GeocodeResponse;
 import org.wanja.hue.weather.model.WeatherResponse;
 
 import io.quarkus.logging.Log;
@@ -47,6 +50,7 @@ public class PublicWeatherAPIService {
 
     LoadingCache<CityResource, WeatherResponse> weatherCache;
     LoadingCache<Coordinates, ForecastResponse> forecastCache;
+    LoadingCache<CityResource, Coordinates> geomapCache;
 
     public PublicWeatherAPIService() {
         Log.info("PublicWeatherAPIService() created");
@@ -59,6 +63,38 @@ public class PublicWeatherAPIService {
                 .expireAfterWrite(60, TimeUnit.MINUTES)
                 .build(k -> loadForecastData(k));
 
+        geomapCache = Caffeine.newBuilder()
+                .build(k -> loadGeomapData(k));
+    }
+
+    /**
+     * Calls the geocode api and returns lat/lon of a city resource
+     * @param city city whoose lat/lon coordinates should be returned
+     * @return Coordinates
+     */
+    private Coordinates loadGeomapData(CityResource city) {
+        List<Coordinates> gr = service.directGeocode(
+            new StringBuilder().append(city.city).append(",").append(city.country).toString(), 
+            1, 
+            weatherAPIKey
+        );
+
+        if( gr != null && gr.size() > 0 ) 
+            return gr.get(0);
+        else 
+            return null;
+    }
+
+    /**
+     * Calls the geocode API and returns lat/lon of a city resource
+     * @param city
+     * @return
+     */
+    private Coordinates loadGeomapByZipData(CityResource city) {
+        return service.geocodeByZip(
+                new StringBuilder().append(city.zip).append(",").append(city.country).toString(),
+                weatherAPIKey
+        );
     }
 
     /**
@@ -78,6 +114,21 @@ public class PublicWeatherAPIService {
      */
     private ForecastResponse loadForecastData(Coordinates coors) {
         return service.onecall(coors.lat, coors.lon, weatherAPIKey, "minutely,hourly", "metric", "de");
+    }
+
+    @GET
+    @Path("geocode")
+    public Coordinates coordinatesByCity(CityResource city) {
+        Log.infof("coordinatesByCity(%s, %s, %s)", city.city, city.zip, city.country);
+        if( city.city == null || city.country == null ) throw new WebApplicationException("This call needs a city and a country code");
+        return geomapCache.get(city, k -> loadGeomapData(k));
+    }
+
+    @GET
+    @Path("geocode-zip")
+    public Coordinates coordinatesByZip(CityResource city) {
+        Log.infof("coordinatesByCity(%s, %s, %s)", city.city, city.zip, city.country);
+        return loadGeomapByZipData(city);
     }
 
     @GET
@@ -108,12 +159,12 @@ public class PublicWeatherAPIService {
     public ForecastResponse weatherForecast(CityResource city) {
         Log.infof("weatherForecast(%s, %s, %s)", city.city, city.zip, city.country);
 
-        WeatherResponse wr = weatherCache.get(city, k->loadWeatherData(city));
+        Coordinates wr = geomapCache.get(city, k->loadGeomapData(city));
 
         if( wr != null ) {
             return service.onecall(
-                    wr.coord.lat, 
-                    wr.coord.lon, 
+                    wr.lat, 
+                    wr.lon, 
                     weatherAPIKey, 
                     "minutely,hourly", 
                     "metric", 

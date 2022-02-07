@@ -2,7 +2,7 @@
     data-gradient-type="radial" data-gradient-colors="#0a0b00 0%, #0aff05 100% " class="fg-white p-6 ">
     <div class="grid">
         <div class="row">
-            <div class="cell-12">
+            <div class="cell-12 text-bold">
                 <h2>HOME</h2>
             </div>
         </div>
@@ -24,31 +24,53 @@
             {/for}
         </div>
     </div>
-    <div class="mt-8">
+
+    <!-- Date -->
+    <div class="mt-4">
         <span class="text-left text-bold fg-white">
-            <span><h4>Weather</h4><span class="fg-white text-medium text-bold">{weather.dtString}</span></span>
+            <span><h4>Weather</h4><span class="fg-white text-medium text-bold">{weather.dtStringFull}</span></span>
         </span>
     </div>
 
+    <!-- The weather part -->
     <div class="grid">
-        <div class="row">
-            <div class="cell-3">
-                <img src="http://openweathermap.org/img/wn/{weather.weather[0].icon}@2x.png" width="100" height="100"/>
+        <div class="row no-gap">
+
+            <div class="cell-2">
+                <div class="row" ><div class="cell">&nbsp;</div> </div>
+                <div class="row" ><div class="cell">&nbsp;</div> </div>
+                <div class="row" >
+                    <div class="cell-4">
+                    <span class="fg-white text-bold h3">
+                        {weather.main.tempString}°C
+                    </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="cell-4">
+                    <span class="fg-white text-medium ">
+                        {weather.weather[0].description}
+                    </span>
+                    </div>
+                </div>
+            </div>
+            <div class="cell-7">
+                <img src="http://openweathermap.org/img/wn/{weather.weather[0].icon}@4x.png" />
             </div>
 
 
-            <div class="cell-4">
+            <!--div class="cell-4">
                 <div class="row">
                     <span class="fg-white text-medium text-bold">{weather.weather[0].description}</span>
                 </div>
                 <div class="row">
-                    <span class="fg-white text-small">Temp: {weather.main.temp}°C</span>
+                    <span class="fg-white text-small">Temp: {weather.main.tempString}°C</span>
                 </div>
                 <div class="row">
-                    <span class="fg-white text-small">Feels: {weather.main.feelsLike}°C</span>
+                    <span class="fg-white text-small">Feels: {weather.main.tempFeelsLikeString}°C</span>
                 </div>
                 <div class="row">
-                    <span class="fg-white text-small">Min/Max: {weather.main.tempMin}°C / {weather.main.tempMax}°C</span>
+                    <span class="fg-white text-small">Min/Max: {weather.main.tempMinString}°C / {weather.main.tempMaxString}°C</span>
                 </div>
 
             </div>
@@ -67,16 +89,30 @@
                     <span class="fg-white text-small">Vis: {weather.visibility}m</span>
                 </div>
 
-            </div>
+            </div -->
+        </div>
+    </div>
 
+    <div class="mt-4">
+        <span class="text-left text-bold fg-white">
+            <span>
+                <h4>7-day forecast</h4>
+            </span>
+        </span>
+    </div>
+
+    
+    <div class="grid">
+        <div class="row">
         </div>
 
-        <div class="row">
-            {#for day in forecast.daily} 
+        {#for day in forecast.daily}
+        <div class="row">   
+            <div class="cell-1">
+                <span class="fg-white text-medium text-bold">{day.dayDtString}</span> <br />
+                <span class="fg-white text-small">{day.extDtString}</span>
+            </div>         
             <div class="cell-4">
-                <div class="row">
-                    <span class="fg-white text-small text-bold" >{day.dtString}</span>
-                </div>
                 <div class="row">
                     <div class="cell-4">
                         <img src="http://openweathermap.org/img/wn/{day.weather[0].icon}.png"  />
@@ -94,8 +130,8 @@
                     <span class="fg-white text-small">{day.weather[0].description}</span>
                 </div>
             </div>
-            {/for}
         </div>
+        {/for}
     </div>
 </div>
 

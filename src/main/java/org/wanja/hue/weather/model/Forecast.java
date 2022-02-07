@@ -1,5 +1,7 @@
 package org.wanja.hue.weather.model;
 
+import java.text.NumberFormat;
+
 import javax.json.bind.annotation.JsonbProperty;
 
 public class Forecast {
@@ -21,5 +23,33 @@ public class Forecast {
 
     @JsonbProperty("grnd_level")
     public Integer grndLevel;
-    
+ 
+    public String tempString() {
+        NumberFormat nf = NumberFormat.getNumberInstance();
+        nf.setMaximumFractionDigits(1);
+        nf.setMinimumFractionDigits(1);
+        return nf.format(temp);
+    }
+
+    public String tempMinString() {
+        NumberFormat nf = NumberFormat.getNumberInstance();
+        nf.setMaximumFractionDigits(1);
+        nf.setMinimumFractionDigits(1);
+        return nf.format(tempMin);
+    }
+
+    public String tempMaxString() {
+        NumberFormat nf = NumberFormat.getNumberInstance();
+        nf.setMaximumFractionDigits(1);
+        nf.setMinimumFractionDigits(1);
+        return nf.format(tempMax);
+    }
+
+    public String tempFeelsLikeString() {
+        NumberFormat nf = NumberFormat.getNumberInstance();
+        nf.setMaximumFractionDigits(1);
+        nf.setMinimumFractionDigits(1);
+        return nf.format(feelsLike);
+    }
+
 }

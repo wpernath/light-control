@@ -25,4 +25,7 @@ public class WeatherResponse {
         return DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY).format(new Date(dt * 1000));
     }
     
+    public String dtStringFull() {
+        return DateFormat.getDateInstance(DateFormat.FULL, Locale.GERMANY).format(new Date(dt*1000));
+    }
 }

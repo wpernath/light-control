@@ -1,5 +1,8 @@
 package org.wanja.hue.weather;
 
+import java.util.List;
+
+import javax.annotation.Generated;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,9 +31,13 @@ public interface OpenWeatherAPIService {
     // calls for geocoding
     @GET
     @Path("/geo/1.0/direct")
-    public Coordinates directGeocode(@QueryParam("q") String query, @QueryParam Integer limit, @QueryParam("appid") String appId);
+    public List<Coordinates> directGeocode(@QueryParam("q") String query, @QueryParam Integer limit, @QueryParam("appid") String appId);
+
+    @GET
+    @Path("/geo/1.0/zip")
+    public Coordinates geocodeByZip(@QueryParam String zip, @QueryParam("appid") String appId);
 
     @GET
     @Path("/geo/1.0/reverse")
-    public Coordinates reverseGeocode(@QueryParam Float lat, @QueryParam Float lon, @QueryParam Integer limit, @QueryParam("appid") String appId);
+    public List<Coordinates> reverseGeocode(@QueryParam Float lat, @QueryParam Float lon, @QueryParam Integer limit, @QueryParam("appid") String appId);
 }
