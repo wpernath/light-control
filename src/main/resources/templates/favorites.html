@@ -55,20 +55,32 @@
                     onclick="toggleLightOnOff({light.id}); ">
                     <div id="div_light_{light.id}"
                         class="mt-2 border border-size-1 bd-lightCyan border-radius-4 {#if light.state.on }bg-white fg-black{#else}fg-white bg-dark{/if} bg-cobalt-hover bg-darkCobalt-active"
-                        style="width: 120px; height: 120px; opacity: 1">
+                        style="width: 120px; height: 140px; opacity: 1">
                         <div class="m2">
-                            <div class="pl-2 pt-1">
-                                {#if light.state.on }
-                                <img id="img_light_{light.id}"
-                                    src="https://img.icons8.com/color-glass/48/000000/light-on.png"
-                                    class="icon h-48 w-48" />
-                                {#else}
-                                <img id="img_light_{light.id}"
-                                    src="https://img.icons8.com/color-glass/48/000000/light-off.png"
-                                    class="icon h-48 w-48" />
-                                {/if}
+                            <div class="grid">
+                                <div class="row">
+                                <div class="cell">
+                                    <div class="pl-2 pt-1">
+                                        {#if light.state.on }
+                                        <img id="img_light_{light.id}"
+                                            src="https://img.icons8.com/color-glass/48/000000/light-on.png"
+                                            class="icon h-48 w-48" />
+                                        {#else}
+                                        <img id="img_light_{light.id}"
+                                            src="https://img.icons8.com/color-glass/48/000000/light-off.png"
+                                            class="icon h-48 w-48" />
+                                        {/if}
+                                    </div>
+                                </div>
+                                <div class="cell">
+                                    <span class="icon">
+                                        <img id="nav-icon" class="inject-me" src="/images/{room.convertClassToImage}" />
+                                    </span>                                    
+                                </div>
+                                </div>
                             </div>
-                            <div class="pl-2 ">
+
+                            <div class="pl-2 pt-3">
                                 <span class="text-left text-secondary text-bold">
                                     <p class="text-ellipsis">{light.name}<br/><span class="text-medium text-ellipsis ">{room.name}</span></p>
                                     
@@ -76,7 +88,12 @@
                             </div>
                             <div class="pl-2">
                                 <span id="state_{light.id}" class="text-left text-secondary text-medium">
-                                    {#if light.state.on}{light.state.brightnessPercentString} %{#else}Off{/if}
+                                    {#if light.state.reachable} 
+                                        {#if light.state.on}{light.state.brightnessPercentString} %
+                                        {#else}Off
+                                        {/if}
+                                    {#else}Not reachable
+                                    {/if}
                                 </span>
                             </div>
                         </div>

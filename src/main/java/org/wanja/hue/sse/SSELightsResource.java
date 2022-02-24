@@ -17,6 +17,7 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.wanja.hue.PublicApiResource;
 import org.wanja.hue.remote.Light;
 
@@ -36,6 +37,10 @@ public class SSELightsResource implements SSEEventListener<Light> {
 
     @Inject
     PublicApiResource api;
+
+    @ConfigProperty(name = "scheduler.lights.every")
+    static String scheduler;
+
 
     @Context
     public synchronized void setSse(Sse sse) {

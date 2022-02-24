@@ -116,7 +116,7 @@
         if( bri ) {
             console.log("changeLightBrightness(" + lightId + ", " + bri + ")");
             let light = findLightById(lightId);
-            if( light ){
+            if( light && light.state.reachable){
                 light.state.bri = bri;
                 updateLightState(light);
             }
@@ -130,12 +130,12 @@
     function toggleLightOnOff(lightId) {
         console.log("toggleLightOnOff(" + lightId + ")");
         let light = findLightById(lightId);
-        if( light ) {
+        if( light && light.state.reachable) {
             light.state.on = !light.state.on;
             updateLightState(light);            
         }
         else { 
-            console.log("light with id " + lightId + " not found"); 
+            console.log("light with id " + lightId + " not found or not reachable."); 
         }
     }
 
@@ -143,9 +143,11 @@
         console.log("allLightsOff()");
         for( let i=0; i < allLights.length; i++) {
             let light = allLights[i];
-            if( light.state.on ) {
-                light.state.on = false;
-                updateLightState(light);
+            if(light.state.reachable ) {
+                if( light.state.on ) {
+                    light.state.on = false;
+                    updateLightState(light);
+                }
             }
         }
     }
@@ -223,23 +225,37 @@
         let div = document.getElementById("state_" + lightId);
         if( img ) {
             var imgName;
-            $( "#div_light_" + lightId ).removeClass("bg-white fg-black fg-white bg-black bg-dark");
-            if( light.state.on ) {
-                var percent = (light.state.bri/254)*100;
-                if( div ) div.textContent = percent.toFixed() + " %";
-                imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png";       
-                $( "#div_light_" + lightId ).addClass("bg-white fg-black");                     
-            }
-            else {
-                if( div ) div.textContent = "Off";
+            $("#div_light_" + lightId).removeClass(
+                "bg-white fg-black fg-white bg-black bg-dark"
+            );
+            if (light.state.reachable) {
+              if (light.state.on) {
+                var percent = (light.state.bri / 254) * 100;
+                if (div) div.textContent = percent.toFixed() + " %";
+                imgName = "https://img.icons8.com/color-glass/48/000000/light-on.png";
+                $("#div_light_" + lightId).addClass("bg-white fg-black");
+              } else {
+                if (div) div.textContent = "Off";
                 imgName = "https://img.icons8.com/color-glass/48/000000/light-off.png";
-                $( "#div_light_" + lightId ).addClass("fg-white bg-dark");
-            }
-            img.src = imgName;
+                $("#div_light_" + lightId).addClass("fg-white bg-dark");
+              }
+              img.src = imgName;
 
-            if( slid ) {
-                slid.disabled=!light.state.on;
+              if (slid) {
+                slid.disabled = !light.state.on;
                 slid.value = light.state.bri;
+              }
+            } 
+            else {
+              // not reachable
+              if( slid ) {
+                slid.disabled = true;
+			    slid.value = light.state.bri;
+              }
+              if (div) {
+                $("#div_light_" + lightId).addClass("fg-white bg-grayBlue");
+                div.innerHTML = "<span class='text-medium fg-red'>Not reachable</span>";
+              }
             }
         }
     }
