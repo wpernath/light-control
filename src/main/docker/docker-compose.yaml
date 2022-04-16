@@ -1,15 +1,15 @@
-version: "3.9"
+version: "3"
 
 services:
   lightsdb:
-    image: postgres:14.2
+    image: docker.io/library/postgres:14.2
     volumes:
       - /tmp/lightsdb:/var/lib/postgresql
     restart: always
     environment:
-      - POSTGRES_USER=lights
-      - POSTGRES_PASSWORD=lights
-      - POSTGRES_DB=lightsdb
+      POSTGRES_USER: lights
+      POSTGRES_PASSWORD: lights
+      POSTGRES_DB: lightsdb
   
   light-control:
     depends_on: 
@@ -19,11 +19,11 @@ services:
       - 8000:8080
     restart: always
     environment:
-      - DB_user=lights
-      - DB_password=lights
-      - DB_host=lightsdb
-      - DB_dbname=lightsdb
-      - WEATHER_API_KEY=$WEATHER_API_KEY
+      DB_user: lights
+      DB_password: lights
+      DB_host: lightsdb
+      DB_dbname: lightsdb
+      WEATHER_API_KEY: $WEATHER_API_KEY
 
 
   
