@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  lightsdb:
+    image: postgres:14.2
+    volumes:
+      - /tmp/lightsdb:/var/lib/postgresql
+    restart: always
+    environment:
+      - POSTGRES_USER=lights
+      - POSTGRES_PASSWORD=lights
+      - POSTGRES_DB=lightsdb
+  
+  light-control:
+    depends_on: 
+      - lightsdb
+    image: quay.io/wpernath/light-control:latest
+    ports:
+      - 8000:8080
+    restart: always
+    environment:
+      - DB_user=lights
+      - DB_password=lights
+      - DB_host=lightsdb
+      - DB_dbname=lightsdb
+      - WEATHER_API_KEY=$WEATHER_API_KEY
+
+
+  
