@@ -1,5 +1,5 @@
 version: "3"
-name: light-control
+#name: "lightcontrol"
 
 services:
   lightsdb:
