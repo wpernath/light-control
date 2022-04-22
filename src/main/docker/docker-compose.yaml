@@ -5,7 +5,7 @@ services:
   lightsdb:
     image: docker.io/library/postgres:14.2
     volumes:
-      - /tmp/lightsdb:/var/lib/postgresql
+      - pg_data:/var/lib/postgresql
     restart: always
     environment:
       POSTGRES_USER: lights
@@ -25,6 +25,7 @@ services:
       DB_host: lightsdb
       DB_dbname: lightsdb
       WEATHER_API_KEY: $WEATHER_API_KEY
-
+volumes:
+  pg_data:
 
   
